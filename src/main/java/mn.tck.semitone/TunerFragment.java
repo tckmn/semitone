@@ -21,18 +21,22 @@ public class TunerFragment extends Fragment {
 
     final static int SAMPLE_RATE = 44100;
     final static int HIST_SIZE = 16;
-    static int bufsize;
-    static AudioRecord ar;
-    static DSP dsp;
+    int bufsize;
+    AudioRecord ar;
 
+    View view;
     TextView notename;
     CentErrorView centerror;
+
+    Thread tunerThread;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         return inflater.inflate(R.layout.tuner, container, false);
     }
 
     @Override public void onViewCreated(View view, Bundle state) {
+        this.view = view;
+
         notename = (TextView) view.findViewById(R.id.notename);
         notename.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override public void onGlobalLayout() {
@@ -52,7 +56,14 @@ public class TunerFragment extends Fragment {
 
         DSP.init(bufsize);
 
-        new Thread(new TunerThread()).start();
+        tunerThread = new Thread(new TunerThread());
+        tunerThread.start();
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ar.stop();
+        tunerThread.interrupt();
     }
 
     class TunerThread implements Runnable {
@@ -61,7 +72,7 @@ public class TunerFragment extends Fragment {
             double[] dbuf = new double[DSP.fftlen];
             double[] hist = new double[HIST_SIZE];
             double[] sorted = new double[HIST_SIZE];
-            for (;;) {
+            while (!Thread.interrupted()) {
                 // copy data to fft buffer - scale down to avoid huge numbers
                 ar.read(buf, 0, bufsize);
                 for (int i = 0; i < DSP.fftlen; ++i) dbuf[i] = buf[i] / 1024.0;
@@ -81,7 +92,7 @@ public class TunerFragment extends Fragment {
                 final int rounded = (int)Math.round(median);
                 final int note = Math.floorMod(rounded, 12);
 
-                getActivity().runOnUiThread(new Runnable() {
+                if (getUserVisibleHint()) getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
                         notename.setText(notenames[note] +
                             (Math.floorDiv(rounded, 12) + 5 - (note <= 2 ? 1 : 0)));
