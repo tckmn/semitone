@@ -18,93 +18,48 @@
 
 package mn.tck.semitone;
 
-import android.app.*;
-import android.content.*;
-import android.graphics.*;
-import android.os.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Window;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder.AudioSource;
-
-import java.util.Arrays;
-
-public class MainActivity extends Activity {
-
-    final static String[] notenames = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
-
-    final static int SAMPLE_RATE = 44100;
-    final static int HIST_SIZE = 16;
-    static int bufsize;
-    static AudioRecord ar;
-    static DSP dsp;
-
-    TextView notename;
-    CentErrorView centerror;
+public class MainActivity extends FragmentActivity {
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
-        notename = (TextView) findViewById(R.id.notename);
-        notename.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override public void onGlobalLayout() {
-                notename.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                notename.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                        Util.maxTextSize("G#000", notename.getWidth()));
-            }
-        });
-        centerror = (CentErrorView) findViewById(R.id.centerror);
+        ViewPager pager = (ViewPager)findViewById(R.id.pager);
+        TabLayout tabs = (TabLayout)findViewById(R.id.tabs);
+        SemitoneAdapter adapter = new SemitoneAdapter(getSupportFragmentManager());
 
-        bufsize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-        ar = new AudioRecord(AudioSource.MIC, SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
-                bufsize);
-        ar.startRecording();
-
-        DSP.init(bufsize);
-
-        new Thread(new TunerThread()).start();
+        pager.setAdapter(adapter);
+        tabs.setupWithViewPager(pager);
     }
 
-    class TunerThread implements Runnable {
-        @Override public void run() {
-            short[] buf = new short[bufsize];
-            double[] dbuf = new double[DSP.fftlen];
-            double[] hist = new double[HIST_SIZE];
-            double[] sorted = new double[HIST_SIZE];
-            for (;;) {
-                // copy data to fft buffer - scale down to avoid huge numbers
-                ar.read(buf, 0, bufsize);
-                for (int i = 0; i < DSP.fftlen; ++i) dbuf[i] = buf[i] / 1024.0;
-
-                // calculate frequency and note
-                double freq = DSP.freq(dbuf, SAMPLE_RATE),
-                       semitone = 12 * Math.log(freq/440)/Math.log(2);
-
-                // insert into moving average history
-                for (int i = 1; i < HIST_SIZE; ++i) sorted[i-1] = hist[i-1] = hist[i];
-                sorted[HIST_SIZE-1] = hist[HIST_SIZE-1] = semitone;
-
-                // find median
-                Arrays.sort(sorted);
-                final double median = (sorted[HIST_SIZE/2-1]+sorted[HIST_SIZE/2])/2;
-
-                final int rounded = (int)Math.round(median);
-                final int note = Math.floorMod(rounded, 12);
-
-                runOnUiThread(new Runnable() {
-                    @Override public void run() {
-                        notename.setText(notenames[note] +
-                            (Math.floorDiv(rounded, 12) + 5 - (note <= 2 ? 1 : 0)));
-                        centerror.setError(median - rounded);
-                    }
-                });
+    private static class SemitoneAdapter extends FragmentPagerAdapter {
+        public SemitoneAdapter(FragmentManager fm) { super(fm); }
+        @Override public int getCount() { return 3; }
+        @Override public Fragment getItem(int pos) {
+            switch (pos) {
+            case 0: return new TunerFragment();
+            case 1: return new MetronomeFragment();
+            case 2: return new PianoFragment();
+            default: return null;
+            }
+        }
+        @Override public CharSequence getPageTitle(int pos) {
+            switch (pos) {
+            case 0: return "Tuner";
+            case 1: return "Metronome";
+            case 2: return "Piano";
+            default: return null;
             }
         }
     }
