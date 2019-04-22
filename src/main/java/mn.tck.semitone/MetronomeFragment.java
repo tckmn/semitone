@@ -36,7 +36,7 @@ public class MetronomeFragment extends Fragment {
     ShapeDrawable dotOn, dotOff;
     LinearLayout.LayoutParams dotParams;
 
-    Thread tick;
+    Tick tick;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         return inflater.inflate(R.layout.metronome, container, false);
@@ -57,7 +57,7 @@ public class MetronomeFragment extends Fragment {
             @Override public void onChange(int val) {
                 tempo = val;
                 tempoBar.setProgress(tempo - MIN_TEMPO);
-                if (enabled) toggle();
+                intermediateTempoChange();
             }
         };
         tempoBar.setProgress(tempo - MIN_TEMPO);
@@ -78,8 +78,10 @@ public class MetronomeFragment extends Fragment {
 
         tempoBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override public void onProgressChanged(SeekBar sb, int val, boolean fromUser) {
+                if (!fromUser) return;
                 tempo = val + MIN_TEMPO;
                 tempoBox.setValue(tempo);
+                intermediateTempoChange();
             }
             @Override public void onStartTrackingTouch(SeekBar sb) {}
             @Override public void onStopTrackingTouch(SeekBar sb) {}
@@ -116,11 +118,14 @@ public class MetronomeFragment extends Fragment {
         if (enabled) {
             startBtn.setText("Stop");
             activeDot = -1;
-            tick = new Thread(new Tick(tempo));
+            tick = new Tick(tempo);
             tick.start();
         } else {
             startBtn.setText("Start");
-            if (tick != null) tick.interrupt();
+            if (tick != null) {
+                tick.keepGoing = false;
+                tick.interrupt();
+            }
             removeDot();
         }
     }
@@ -131,17 +136,41 @@ public class MetronomeFragment extends Fragment {
         }
     }
 
-    class Tick implements Runnable {
-        int tempo, nTicks;
-        long startTime, nextTime;
+    private void intermediateTempoChange() {
+        if (!enabled) return;
+        long elapsedTime = System.currentTimeMillis() - tick.tickTime(tick.nTicks - 1);
+
+        tick.tempo = tempo;
+        if (elapsedTime >= 1000 * (60.0 / tick.tempo)) {
+            // immediate tick
+            tick.nTicks = 0;
+            tick.startTime = System.currentTimeMillis();
+            tick.nextTime = tick.startTime;
+        } else {
+            // count the time since the last tick towards the next one
+            tick.nTicks = 1;
+            tick.startTime = System.currentTimeMillis() - elapsedTime;
+            tick.nextTime = tick.tickTime(1);
+        }
+
+        // break out of any sleeps currently happening
+        tick.interrupt();
+    }
+
+    class Tick extends Thread {
+        protected int tempo, nTicks;
+        protected long startTime, nextTime;
+        protected boolean keepGoing;
         public Tick(int tempo) {
             this.tempo = tempo;
+            keepGoing = true;
         }
+
         @Override public void run() {
             nTicks = 0;
             startTime = System.currentTimeMillis();
             nextTime = startTime;
-            while (!Thread.interrupted()) {
+            while (keepGoing) {
                 long diff = nextTime - System.currentTimeMillis();
                 if (diff <= 0) {}
                 // else if (diff <= 5) {
@@ -151,7 +180,7 @@ public class MetronomeFragment extends Fragment {
                 else {
                     // we have a while - sleep and check again
                     try { Thread.sleep(diff); }
-                    catch (InterruptedException e) { return; }
+                    catch (InterruptedException e) {}
                     continue;
                 }
 
@@ -166,8 +195,12 @@ public class MetronomeFragment extends Fragment {
                 });
 
                 // queue the next tick
-                nextTime = startTime + Math.round((++nTicks) * 1000 * (60.0 / tempo));
+                nextTime = tickTime(++nTicks);
             }
+        }
+
+        protected long tickTime(int nTick) {
+            return startTime + Math.round(nTick * 1000 * (60.0 / tempo));
         }
     }
 
