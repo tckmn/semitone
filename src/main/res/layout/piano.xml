@@ -2,14 +2,56 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:semitone="http://schemas.android.com/apk/res/mn.tck.semitone"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <mn.tck.semitone.NumBox
+            android:id="@+id/rows"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            semitone:label="rows"
+            semitone:value="2"
+            semitone:minVal="1"
+            semitone:maxVal="4" />
+
+        <mn.tck.semitone.NumBox
+            android:id="@+id/keys"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            semitone:label="keys"
+            semitone:value="7"
+            semitone:minVal="3"
+            semitone:maxVal="14" />
+
+        <mn.tck.semitone.NumBox
+            android:id="@+id/pitch"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            semitone:label="pitch"
+            semitone:value="60"
+            semitone:minVal="1"
+            semitone:maxVal="120" />
+
+    </LinearLayout>
+
+    <mn.tck.semitone.PianoView
+        android:id="@+id/piano"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="piano" />
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px" />
 
 </LinearLayout>
