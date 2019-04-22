@@ -28,21 +28,21 @@ public class PianoFragment extends Fragment {
         rowsBox.cb = new NumBox.Callback() {
             @Override public void onChange(int val) {
                 piano.rows = val;
-                piano.invalidate();
+                piano.updateParams(true);
             }
         };
 
         keysBox.cb = new NumBox.Callback() {
             @Override public void onChange(int val) {
                 piano.keys = val;
-                piano.invalidate();
+                piano.updateParams(true);
             }
         };
 
         pitchBox.cb = new NumBox.Callback() {
             @Override public void onChange(int val) {
                 piano.pitch = val;
-                piano.invalidate();
+                piano.updateParams(true);
             }
         };
     }

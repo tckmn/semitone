@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="pitch"
-            semitone:value="60"
+            semitone:value="48"
             semitone:minVal="1"
             semitone:maxVal="120" />
 

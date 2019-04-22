@@ -15,13 +15,14 @@ public class PianoView extends View {
 
     public int rows, keys, pitch;
     int whiteWidth, whiteHeight, blackWidth, blackHeight;
-    Paint whitePaint, greyPaint, blackPaint;
+    Paint whitePaint, grey1Paint, grey3Paint, grey4Paint, blackPaint;
 
     final int OUTLINE = 2, YPAD = 20;
     final int SAMPLE_RATE = 44100;
     final int MAX_TRACKS = 10;
 
     int[][] pitches;
+    boolean[] pressed;
 
     AudioAttributes aa;
     AudioFormat af;
@@ -32,12 +33,17 @@ public class PianoView extends View {
 
         rows = 2;
         keys = 7;
-        pitch = 60;
+        pitch = 48;
+        updateParams(false);
 
         whitePaint = new Paint();
         whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
-        greyPaint = new Paint();
-        greyPaint.setColor(ContextCompat.getColor(getContext(), R.color.grey3));
+        grey1Paint = new Paint();
+        grey1Paint.setColor(ContextCompat.getColor(getContext(), R.color.grey1));
+        grey3Paint = new Paint();
+        grey3Paint.setColor(ContextCompat.getColor(getContext(), R.color.grey3));
+        grey4Paint = new Paint();
+        grey4Paint.setColor(ContextCompat.getColor(getContext(), R.color.grey4));
         blackPaint = new Paint();
         blackPaint.setColor(ContextCompat.getColor(getContext(), R.color.black));
 
@@ -52,7 +58,22 @@ public class PianoView extends View {
             .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
             .build();
 
+        pressed = new boolean[300];
         tracks = new AudioTrack[10];
+    }
+
+    public void updateParams(boolean inval) {
+        pitches = new int[rows][keys];
+
+        int p = pitch;
+        for (int row = 0; row < rows; ++row) {
+            for (int key = 0; key < keys; ++key) {
+                pitches[row][key] = p;
+                p += hasBlackRight(p) ? 2 : 1;
+            }
+        }
+
+        if (inval) invalidate();
     }
 
     @Override protected void onDraw(Canvas canvas) {
@@ -64,34 +85,53 @@ public class PianoView extends View {
         blackWidth = whiteWidth * 2 / 3;
         blackHeight = whiteHeight / 2;
 
-        pitches = new int[rows][keys];
-
-        int p = pitch;
         for (int row = 0; row < rows; ++row) {
             for (int key = 0; key < keys; ++key) {
-                pitches[row][key] = p;
-
                 int x = whiteWidth * key, y = whiteHeight * row;
-                canvas.drawRect(x, y, x + whiteWidth, y + whiteHeight - YPAD, greyPaint);
+                int p = pitches[row][key];
+
+                canvas.drawRect(x, y, x + whiteWidth, y + whiteHeight - YPAD, grey3Paint);
                 canvas.drawRect(x + OUTLINE, y, x + whiteWidth - OUTLINE,
-                        y + whiteHeight - OUTLINE*2 - YPAD, whitePaint);
+                        y + whiteHeight - OUTLINE*2 - YPAD,
+                        pressed[p] ? grey4Paint : whitePaint);
 
-                if (hasBlackLeft(p)) {
-                    canvas.drawRect(x, y, x + blackWidth / 2, y + blackHeight, blackPaint);
-                }
+                if (hasBlackLeft(p)) canvas.drawRect(
+                        x, y,
+                        x + blackWidth / 2, y + blackHeight,
+                        pressed[p-1] ? grey1Paint : blackPaint);
+                if (hasBlackRight(p)) canvas.drawRect(
+                        x + whiteWidth - blackWidth / 2, y,
+                        x + whiteWidth, y + blackHeight,
+                        pressed[p+1] ? grey1Paint : blackPaint);
 
-                if (hasBlackRight(p)) {
-                    canvas.drawRect(x + whiteWidth - blackWidth / 2, y,
-                            x + whiteWidth, y + blackHeight, blackPaint);
-                    p += 2;
-                } else ++p;
             }
         }
     }
 
     @Override public boolean onTouchEvent(MotionEvent ev) {
-        if (ev.getActionMasked() != MotionEvent.ACTION_DOWN) return false;
+        int p = getPitch(ev);
+        switch (ev.getActionMasked()) {
 
+        case MotionEvent.ACTION_DOWN:
+            if (!pressed[p]) {
+                pressed[p] = true;
+                invalidate();
+                playTone(440 * Math.pow(2, (p - 69) / 12.0));
+            }
+            return true;
+
+        case MotionEvent.ACTION_UP:
+            if (pressed[p]) {
+                pressed[p] = false;
+                invalidate();
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    private int getPitch(MotionEvent ev) {
         int row = (int)(ev.getY() / whiteHeight),
             key = (int)(ev.getX() / whiteWidth),
             p = pitches[row][key];
@@ -103,8 +143,7 @@ public class PianoView extends View {
             else if (x > whiteWidth - blackWidth/2 && hasBlackRight(p)) ++p;
         }
 
-        playTone(440 * Math.pow(2, (p - 69) / 12.0));
-        return true;
+        return p < 0 || p > 128 ? 0 : p;
     }
 
     private void playTone(double freq) {
@@ -125,7 +164,8 @@ public class PianoView extends View {
             tracks[pos].release();
         }
 
-        byte[] buf = genSine(freq);
+        byte[] buf = genSound(SoundType.SHARP, freq,
+                0.01, 0.05, 0.4, 0);
         AudioTrack at = new AudioTrack.Builder()
             .setAudioAttributes(aa)
             .setAudioFormat(af)
@@ -137,11 +177,43 @@ public class PianoView extends View {
         tracks[pos] = at;
     }
 
-    private byte[] genSine(double freq) {
-        int samples = SAMPLE_RATE;
+    enum SoundType { SINE, SOFT, SHARP }
+    private byte[] genSound(SoundType st, double freq,
+            double attack, double sustain, double release, double noise) {
+        int samples = (int)((attack+sustain+release) * SAMPLE_RATE);
         byte[] buf = new byte[samples*2];
         for (int i = 0; i < samples; ++i) {
-            short val = (short)(32767 * Math.sin(2*Math.PI * freq * i / SAMPLE_RATE));
+            double unprocessed = 0;
+            switch (st) {
+            case SINE: unprocessed = Math.sin(2*Math.PI * freq * i / SAMPLE_RATE); break;
+            case SOFT: unprocessed =
+                0.500*Math.sin(2*Math.PI * 1*freq * i / SAMPLE_RATE) +
+                0.250*Math.sin(2*Math.PI * 2*freq * i / SAMPLE_RATE) +
+                0.125*Math.sin(2*Math.PI * 3*freq * i / SAMPLE_RATE) +
+                0.050*Math.sin(2*Math.PI * 4*freq * i / SAMPLE_RATE) +
+                0.025*Math.sin(2*Math.PI * 5*freq * i / SAMPLE_RATE); break;
+            case SHARP: unprocessed =
+                0.5*Math.sin(2*Math.PI * 1*freq * i / SAMPLE_RATE) +
+                0.4*Math.sin(2*Math.PI * 2*freq * i / SAMPLE_RATE) +
+                0.3*Math.sin(2*Math.PI * 3*freq * i / SAMPLE_RATE) +
+                0.2*Math.sin(2*Math.PI * 4*freq * i / SAMPLE_RATE) +
+                0.1*Math.sin(2*Math.PI * 5*freq * i / SAMPLE_RATE); break;
+            }
+
+            // TODO not just linear
+            double multiplier = 1;
+            if (i <= attack*SAMPLE_RATE) multiplier = i / (attack*SAMPLE_RATE);
+            else if (i >= (attack+sustain)*SAMPLE_RATE) multiplier = (samples-i) / (release*SAMPLE_RATE);
+            unprocessed *= multiplier;
+
+            // adjust for frequency
+            if (freq > 400) unprocessed *= Math.pow(400/freq, 1.3);
+
+            unprocessed += (Math.random()-0.5)*noise;
+
+            final short amplitude = 30000;
+            short val = (short)Math.min(amplitude, Math.max(-amplitude,
+                        amplitude*unprocessed));
             buf[i*2] = (byte)(val & 0x00ff);
             buf[i*2+1] = (byte)((val & 0xff00) >> 8);
         }
