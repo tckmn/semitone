@@ -25,6 +25,7 @@ public class MetronomeFragment extends Fragment {
     int tempo, beats, subdiv;
     boolean enabled;
 
+    LinearLayout dotsView;
     ArrayList<ImageView> dots;
     int activeDot;
 
@@ -52,6 +53,7 @@ public class MetronomeFragment extends Fragment {
         tempoBar = (SeekBar) view.findViewById(R.id.tempobar);
         startBtn = (Button) view.findViewById(R.id.start);
         tapBtn = (Button) view.findViewById(R.id.tap);
+        dotsView = (LinearLayout) view.findViewById(R.id.dots);
 
         tempoBox.cb = new NumBox.Callback() {
             @Override public void onChange(int val) {
@@ -65,7 +67,7 @@ public class MetronomeFragment extends Fragment {
         beatsBox.cb = new NumBox.Callback() {
             @Override public void onChange(int val) {
                 beats = val;
-                if (enabled) toggle();
+                intermediateBeatChange();
             }
         };
 
@@ -104,13 +106,7 @@ public class MetronomeFragment extends Fragment {
         dotParams = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1);
 
         dots = new ArrayList<ImageView>();
-        for (int i = 0; i < beats; ++i) {
-            ImageView img = new ImageView(getContext());
-            img.setImageDrawable(dotOff);
-            img.setLayoutParams(dotParams);
-            ((LinearLayout)view.findViewById(R.id.dots)).addView(img);
-            dots.add(img);
-        }
+        intermediateBeatChange();
     }
 
     private void toggle() {
@@ -155,6 +151,26 @@ public class MetronomeFragment extends Fragment {
 
         // break out of any sleeps currently happening
         tick.interrupt();
+    }
+
+    private void intermediateBeatChange() {
+        for (ImageView dot : dots) {
+            dotsView.removeView(dot);
+        }
+        dots.clear();
+
+        for (int i = 0; i < beats; ++i) {
+            ImageView img = new ImageView(getContext());
+            img.setImageDrawable(dotOff);
+            img.setLayoutParams(dotParams);
+            dotsView.addView(img);
+            dots.add(img);
+        }
+
+        if (enabled) {
+            if (activeDot > beats-1) activeDot = beats-1;
+            dots.get(activeDot).setImageDrawable(dotOn);
+        }
     }
 
     class Tick extends Thread {
