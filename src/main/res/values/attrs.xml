@@ -4,5 +4,7 @@
     <declare-styleable name="NumBox">
         <attr name="label" format="string" />
         <attr name="value" format="integer" />
+        <attr name="minVal" format="integer" />
+        <attr name="maxVal" format="integer" />
     </declare-styleable>
 </resources>

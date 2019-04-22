@@ -31,7 +31,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="tempo"
-            semitone:value="120" />
+            semitone:value="120"
+            semitone:minVal="40"
+            semitone:maxVal="400" />
 
         <mn.tck.semitone.NumBox
             android:id="@+id/beats"
@@ -40,7 +42,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="beats"
-            semitone:value="4" />
+            semitone:value="4"
+            semitone:minVal="1"
+            semitone:maxVal="8" />
 
         <mn.tck.semitone.NumBox
             android:id="@+id/subdiv"
@@ -49,14 +53,18 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="subdiv"
-            semitone:value="1" />
+            semitone:value="1"
+            semitone:minVal="1"
+            semitone:maxVal="4" />
 
     </LinearLayout>
 
     <SeekBar
+        android:id="@+id/tempobar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:max="360" />
 
     <LinearLayout
         android:layout_width="match_parent"

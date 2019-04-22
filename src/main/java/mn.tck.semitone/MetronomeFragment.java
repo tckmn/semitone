@@ -10,6 +10,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 
@@ -19,6 +20,8 @@ public class MetronomeFragment extends Fragment {
     final int MAX_TEMPO = 400;
 
     int tempo, beats, subdiv;
+    NumBox tempoBox, beatsBox, subdivBox;
+    SeekBar tempoBar;
 
     View view;
     ShapeDrawable dotOn, dotOff;
@@ -31,9 +34,40 @@ public class MetronomeFragment extends Fragment {
     @Override public void onViewCreated(View view, Bundle state) {
         this.view = view;
 
-        tempo = 120;
-        beats = 4;
-        subdiv = 1;
+        tempo = 120; beats = 4; subdiv = 1;
+        tempoBox = (NumBox) view.findViewById(R.id.tempo);
+        beatsBox = (NumBox) view.findViewById(R.id.beats);
+        subdivBox = (NumBox) view.findViewById(R.id.subdiv);
+        tempoBar = (SeekBar) view.findViewById(R.id.tempobar);
+        tempoBar.setProgress(tempo - MIN_TEMPO);
+
+        tempoBox.cb = new NumBox.Callback() {
+            @Override public void onChange(int val) {
+                tempo = val;
+                tempoBar.setProgress(tempo - MIN_TEMPO);
+            }
+        };
+
+        beatsBox.cb = new NumBox.Callback() {
+            @Override public void onChange(int val) {
+                beats = val;
+            }
+        };
+
+        subdivBox.cb = new NumBox.Callback() {
+            @Override public void onChange(int val) {
+                subdiv = val;
+            }
+        };
+
+        tempoBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar sb, int val, boolean fromUser) {
+                tempo = val + MIN_TEMPO;
+                tempoBox.setValue(tempo);
+            }
+            @Override public void onStartTrackingTouch(SeekBar sb) {}
+            @Override public void onStopTrackingTouch(SeekBar sb) {}
+        });
 
         // TODO don't hardcode 100 here (and 200px in the layout)
         dotOn = new ShapeDrawable(new OvalShape());
