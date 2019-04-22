@@ -11,6 +11,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.content.ContextCompat;
 
+import java.util.HashMap;
+
 public class PianoView extends View {
 
     public int rows, keys, pitch;
@@ -23,6 +25,7 @@ public class PianoView extends View {
 
     int[][] pitches;
     boolean[] pressed;
+    HashMap<Integer, Integer> pointers;
 
     AudioAttributes aa;
     AudioFormat af;
@@ -59,6 +62,7 @@ public class PianoView extends View {
             .build();
 
         pressed = new boolean[300];
+        pointers = new HashMap<Integer, Integer>();
         tracks = new AudioTrack[10];
     }
 
@@ -109,36 +113,62 @@ public class PianoView extends View {
     }
 
     @Override public boolean onTouchEvent(MotionEvent ev) {
-        int p = getPitch(ev);
+        int np = ev.getPointerCount();
+        int pid, p;
+
         switch (ev.getActionMasked()) {
 
         case MotionEvent.ACTION_DOWN:
-            if (!pressed[p]) {
-                pressed[p] = true;
-                invalidate();
-                playTone(440 * Math.pow(2, (p - 69) / 12.0));
+            pid = ev.getPointerId(0); p = getPitch(ev, 0);
+            pointers.put(pid, p);
+            playTone(p);
+            invalidate();
+            return true;
+
+        case MotionEvent.ACTION_POINTER_DOWN:
+            pid = ev.getPointerId(ev.getActionIndex()); p = getPitch(ev, ev.getActionIndex());
+            pointers.put(pid, p);
+            playTone(p);
+            invalidate();
+            return true;
+
+        case MotionEvent.ACTION_MOVE:
+            boolean anyChange = false;
+            for (int i = 0; i < np; ++i) {
+                pid = ev.getPointerId(i); p = getPitch(ev, i);
+                if (pointers.get(pid) != p) {
+                    pressed[pointers.get(pid)] = false;
+                    pointers.replace(pid, p);
+                    anyChange = true;
+                    playTone(p);
+                }
             }
+            if (anyChange) invalidate();
             return true;
 
         case MotionEvent.ACTION_UP:
-            if (pressed[p]) {
-                pressed[p] = false;
-                invalidate();
-            }
+            pressed[pointers.remove(ev.getPointerId(0))] = false;
+            invalidate();
             return true;
+
+        case MotionEvent.ACTION_POINTER_UP:
+            pressed[pointers.remove(ev.getPointerId(ev.getActionIndex()))] = false;
+            invalidate();
+            return true;
+
         }
 
         return false;
     }
 
-    private int getPitch(MotionEvent ev) {
-        int row = (int)(ev.getY() / whiteHeight),
-            key = (int)(ev.getX() / whiteWidth),
+    private int getPitch(MotionEvent ev, int pidx) {
+        int row = (int)(ev.getY(pidx) / whiteHeight),
+            key = (int)(ev.getX(pidx) / whiteWidth),
             p = pitches[row][key];
 
-        if (ev.getY() - row*whiteHeight < blackHeight) {
+        if (ev.getY(pidx) - row*whiteHeight < blackHeight) {
             // we're high enough to hit a black key - check if we do
-            int x = (int)(ev.getX() - key*whiteWidth);
+            int x = (int)(ev.getX(pidx) - key*whiteWidth);
             if (x < blackWidth/2 && hasBlackLeft(p)) --p;
             else if (x > whiteWidth - blackWidth/2 && hasBlackRight(p)) ++p;
         }
@@ -146,7 +176,10 @@ public class PianoView extends View {
         return p < 0 || p > 128 ? 0 : p;
     }
 
-    private void playTone(double freq) {
+    private void playTone(int p) {
+        pressed[p] = true;
+        double freq = 440 * Math.pow(2, (p - 69) / 12.0);
+
         // this will be used as a fallback if all slots are taken,
         // so choose randomly
         int pos = (int)(MAX_TRACKS*Math.random());
