@@ -2,6 +2,8 @@ package mn.tck.semitone;
 
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +40,8 @@ public class MetronomeFragment extends Fragment {
     LinearLayout.LayoutParams dotParams;
 
     Tick tick;
+    SoundPool pool;
+    int strong, weak;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         return inflater.inflate(R.layout.metronome, container, false);
@@ -45,6 +49,16 @@ public class MetronomeFragment extends Fragment {
 
     @Override public void onViewCreated(View view, Bundle state) {
         this.view = view;
+
+        pool = new SoundPool.Builder()
+            .setMaxStreams(4)
+            .setAudioAttributes(new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build())
+            .build();
+        strong = pool.load(getContext(), R.raw.strong, 1);
+        weak = pool.load(getContext(), R.raw.weak, 1);
 
         tempo = 120; beats = 4; subdiv = 1; enabled = false;
         tempoBox = (NumBox) view.findViewById(R.id.tempo);
@@ -107,6 +121,11 @@ public class MetronomeFragment extends Fragment {
 
         dots = new ArrayList<ImageView>();
         intermediateBeatChange();
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        pool.release();
     }
 
     private void toggle() {
@@ -206,7 +225,8 @@ public class MetronomeFragment extends Fragment {
                         removeDot();
                         activeDot = (activeDot + 1) % beats;
                         dots.get(activeDot).setImageDrawable(dotOn);
-                        // TODO play sound
+
+                        pool.play(activeDot == 0 ? strong : weak, 1, 1, 1, 0, 1);
                     }
                 });
 
