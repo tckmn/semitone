@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/settings_title">
+
+    <PreferenceCategory
+        android:title="@string/settings_global">
+
+        <EditTextPreference
+            android:key="concert_a"
+            android:title="@string/concert_a_title"
+            android:summary="@string/concert_a_summary"
+            android:dialogTitle="@string/concert_a_dialog" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
