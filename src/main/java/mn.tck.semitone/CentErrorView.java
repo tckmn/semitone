@@ -18,13 +18,12 @@
 
 package mn.tck.semitone;
 
-import android.app.*;
-import android.content.*;
-import android.graphics.*;
-import android.os.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.widget.TextView;
+import android.util.AttributeSet;
 
 public class CentErrorView extends TextView {
 
