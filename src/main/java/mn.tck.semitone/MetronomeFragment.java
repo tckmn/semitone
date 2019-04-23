@@ -1,11 +1,13 @@
 package mn.tck.semitone;
 
+import android.content.Context;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -28,7 +30,7 @@ public class MetronomeFragment extends Fragment {
     boolean enabled;
 
     LinearLayout dotsView;
-    ArrayList<ImageView> dots;
+    ArrayList<Dot> dots;
     int activeDot;
 
     NumBox tempoBox, beatsBox, subdivBox;
@@ -36,7 +38,7 @@ public class MetronomeFragment extends Fragment {
     Button startBtn, tapBtn;
 
     View view;
-    ShapeDrawable dotOn, dotOff;
+    ShapeDrawable dotOn, dotOnBig, dotOff, dotOffBig;
     LinearLayout.LayoutParams dotParams;
 
     Tick tick;
@@ -107,19 +109,17 @@ public class MetronomeFragment extends Fragment {
             @Override public void onClick(View v) { toggle(); }
         });
 
-        // TODO don't hardcode 100 here (and 200px in the layout)
-        dotOn = new ShapeDrawable(new OvalShape());
-        dotOn.setIntrinsicWidth(100);
-        dotOn.setIntrinsicHeight(100);
-        dotOn.getPaint().setColor(ContextCompat.getColor(getContext(), R.color.white));
-        dotOff = new ShapeDrawable(new OvalShape());
-        dotOff.setIntrinsicWidth(100);
-        dotOff.setIntrinsicHeight(100);
-        dotOff.getPaint().setColor(ContextCompat.getColor(getContext(), R.color.grey1));
+        // TODO don't hardcode numbers here (and 200px in the layout)
+        final int smallSize = getResources().getDimensionPixelSize(R.dimen.small_dot),
+              largeSize = getResources().getDimensionPixelSize(R.dimen.large_dot);
+        dotOn     = makeDot(smallSize, R.color.white);
+        dotOnBig  = makeDot(largeSize, R.color.white);
+        dotOff    = makeDot(smallSize, R.color.grey1);
+        dotOffBig = makeDot(largeSize, R.color.grey1);
 
         dotParams = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1);
 
-        dots = new ArrayList<ImageView>();
+        dots = new ArrayList<Dot>();
         intermediateBeatChange();
     }
 
@@ -129,6 +129,14 @@ public class MetronomeFragment extends Fragment {
     }
 
     public void onSettingsChanged() {
+    }
+
+    private ShapeDrawable makeDot(int size, int color) {
+        ShapeDrawable dot = new ShapeDrawable(new OvalShape());
+        dot.setIntrinsicWidth(size);
+        dot.setIntrinsicHeight(size);
+        dot.getPaint().setColor(ContextCompat.getColor(getContext(), color));
+        return dot;
     }
 
     private void toggle() {
@@ -170,23 +178,18 @@ public class MetronomeFragment extends Fragment {
     }
 
     private void intermediateBeatChange() {
-        for (ImageView dot : dots) {
+        for (Dot dot : dots) {
             dotsView.removeView(dot);
         }
         dots.clear();
 
         for (int i = 0; i < beats; ++i) {
-            ImageView img = new ImageView(getContext());
-            img.setImageDrawable(dotOff);
-            img.setLayoutParams(dotParams);
-            dotsView.addView(img);
-            dots.add(img);
+            Dot dot = new Dot(getContext(), i == 0);
+            dotsView.addView(dot);
+            dots.add(dot);
         }
 
-        if (enabled) {
-            if (activeDot > beats-1) activeDot = beats-1;
-            dots.get(activeDot).setImageDrawable(dotOn);
-        }
+        if (enabled && activeDot > beats-1) activeDot = beats-1;
     }
 
     class Tick extends Thread {
@@ -218,17 +221,17 @@ public class MetronomeFragment extends Fragment {
 
                 // time for another tick
                 if (nTicks % subdiv == 0) activeDot = (activeDot + 1) % beats;
-                pool.play(activeDot == 0 && nTicks % subdiv == 0 ? strong : weak,
+                pool.play(nTicks % subdiv == 0 && dots.get(activeDot).big ? strong : weak,
                         1, 1, 1, 0, 1);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
-                        dots.get(activeDot).setImageDrawable(dotOn);
+                        dots.get(activeDot).turnOn();
                     }
                 });
                 try { Thread.sleep(Math.min(100, (long)(delayTime()/2))); } catch (InterruptedException e) {}
                 getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
-                        dots.get(activeDot).setImageDrawable(dotOff);
+                        dots.get(activeDot).turnOff();
                     }
                 });
 
@@ -242,6 +245,28 @@ public class MetronomeFragment extends Fragment {
         }
 
         protected double delayTime() { return 1000 * 60.0 / (tempo*subdiv); }
+    }
+
+    class Dot extends ImageView {
+        boolean big;
+        public Dot(Context context, boolean big) {
+            super(context);
+            this.big = big;
+            turnOff();
+            setLayoutParams(dotParams);
+        }
+
+        @Override public boolean onTouchEvent(MotionEvent ev) {
+            if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                big = !big;
+                turnOff();
+                return true;
+            }
+            return false;
+        }
+
+        public void turnOff() { setImageDrawable(big ? dotOffBig : dotOff); }
+        public void turnOn()  { setImageDrawable(big ? dotOnBig  : dotOn);  }
     }
 
 }

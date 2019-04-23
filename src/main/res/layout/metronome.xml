@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/dots"
         android:layout_width="match_parent"
-        android:layout_height="200px"
+        android:layout_height="55dp"
         android:orientation="horizontal"
         android:gravity="center" />
 

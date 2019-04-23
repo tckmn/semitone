@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <dimen name="small_dot">36dp</dimen>
+    <dimen name="large_dot">44dp</dimen>
+</resources>
