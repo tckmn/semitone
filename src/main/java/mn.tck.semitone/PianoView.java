@@ -31,6 +31,8 @@ public class PianoView extends View {
     AudioFormat af;
     AudioTrack tracks[];
 
+    int concert_a;
+
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -178,7 +180,7 @@ public class PianoView extends View {
 
     private void playTone(int p) {
         pressed[p] = true;
-        double freq = 440 * Math.pow(2, (p - 69) / 12.0);
+        double freq = concert_a * Math.pow(2, (p - 69) / 12.0);
 
         // this will be used as a fallback if all slots are taken,
         // so choose randomly

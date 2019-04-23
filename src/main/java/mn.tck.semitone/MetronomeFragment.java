@@ -128,6 +128,9 @@ public class MetronomeFragment extends Fragment {
         pool.release();
     }
 
+    public void onSettingsChanged() {
+    }
+
     private void toggle() {
         enabled = !enabled;
         if (enabled) {

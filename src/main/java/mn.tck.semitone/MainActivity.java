@@ -19,6 +19,7 @@
 package mn.tck.semitone;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.View;
@@ -29,17 +30,27 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.preference.PreferenceManager;
 
 public class MainActivity extends FragmentActivity {
 
     ImageView fullscreen, settings;
 
+    static TunerFragment tf;
+    static MetronomeFragment mf;
+    static PianoFragment pf;
+
     static final int SETTINGS_INTENT_CODE = 123;
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
-        // requestWindowFeature(Window.FEATURE_NO_TITLE);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!sp.contains("concert_a")) {
+            sp.edit().putString("concert_a", "440").commit();
+        }
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
@@ -63,7 +74,9 @@ public class MainActivity extends FragmentActivity {
         super.onActivityResult(code, res, data);
         switch (code) {
         case SETTINGS_INTENT_CODE:
-            android.util.Log.e("semitone", "semitone got here");
+            if (tf != null) tf.onSettingsChanged();
+            if (mf != null) mf.onSettingsChanged();
+            if (pf != null) pf.onSettingsChanged();
             break;
         }
     }
@@ -73,9 +86,9 @@ public class MainActivity extends FragmentActivity {
         @Override public int getCount() { return 3; }
         @Override public Fragment getItem(int pos) {
             switch (pos) {
-            case 0: return new TunerFragment();
-            case 1: return new MetronomeFragment();
-            case 2: return new PianoFragment();
+            case 0: tf = new TunerFragment();     return tf;
+            case 1: mf = new MetronomeFragment(); return mf;
+            case 2: pf = new PianoFragment();     return pf;
             default: return null;
             }
         }

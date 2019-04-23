@@ -8,6 +8,7 @@
         android:title="@string/settings_global">
 
         <EditTextPreference
+            android:numeric="integer"
             android:key="concert_a"
             android:title="@string/concert_a_title"
             android:summary="@string/concert_a_summary"

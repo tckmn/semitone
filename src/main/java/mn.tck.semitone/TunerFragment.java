@@ -1,5 +1,6 @@
 package mn.tck.semitone;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewTreeObserver;
 import android.widget.TextView;
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
+import android.support.v7.preference.PreferenceManager;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -28,6 +30,7 @@ public class TunerFragment extends Fragment {
     TextView notename;
     CentErrorView centerror;
 
+    int concert_a;
     Thread tunerThread;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
@@ -58,12 +61,23 @@ public class TunerFragment extends Fragment {
 
         tunerThread = new Thread(new TunerThread());
         tunerThread.start();
+
+        onSettingsChanged();
     }
 
     @Override public void onDestroyView() {
         super.onDestroyView();
         ar.stop();
         tunerThread.interrupt();
+    }
+
+    public void onSettingsChanged() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        try {
+            concert_a = Integer.parseInt(sp.getString("concert_a", "440"));
+        } catch (NumberFormatException e) {
+            concert_a = 440;
+        }
     }
 
     class TunerThread implements Runnable {
@@ -79,7 +93,7 @@ public class TunerFragment extends Fragment {
 
                 // calculate frequency and note
                 double freq = DSP.freq(dbuf, SAMPLE_RATE),
-                       semitone = 12 * Math.log(freq/440)/Math.log(2);
+                       semitone = 12 * Math.log(freq/concert_a)/Math.log(2);
 
                 // insert into moving average history
                 for (int i = 1; i < HIST_SIZE; ++i) sorted[i-1] = hist[i-1] = hist[i];

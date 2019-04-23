@@ -1,10 +1,12 @@
 package mn.tck.semitone;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
 
 public class PianoFragment extends Fragment {
 
@@ -45,6 +47,17 @@ public class PianoFragment extends Fragment {
                 piano.updateParams(true);
             }
         };
+
+        onSettingsChanged();
+    }
+
+    public void onSettingsChanged() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        try {
+            piano.concert_a = Integer.parseInt(sp.getString("concert_a", "440"));
+        } catch (NumberFormatException e) {
+            piano.concert_a = 440;
+        }
     }
 
 }
