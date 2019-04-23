@@ -197,19 +197,24 @@ public class PianoView extends View {
         if (tracks[pos] != null) {
             tracks[pos].stop();
             tracks[pos].release();
+            tracks[pos] = null;
         }
 
         byte[] buf = genSound(SoundType.SHARP, freq,
                 0.01, 0.05, 0.4, 0);
-        AudioTrack at = new AudioTrack.Builder()
-            .setAudioAttributes(aa)
-            .setAudioFormat(af)
-            .setBufferSizeInBytes(buf.length)
-            .build();
-        at.write(buf, 0, buf.length);
-        at.play();
-
-        tracks[pos] = at;
+        try {
+            AudioTrack at = new AudioTrack.Builder()
+                .setAudioAttributes(aa)
+                .setAudioFormat(af)
+                .setBufferSizeInBytes(buf.length)
+                .build();
+            at.write(buf, 0, buf.length);
+            at.play();
+            tracks[pos] = at;
+        } catch (UnsupportedOperationException e) {
+            // usually happens when you freak out and mash a ton of keys, so we
+            // just play nothing since the user probably won't notice anyway
+        }
     }
 
     enum SoundType { SINE, SOFT, SHARP }
