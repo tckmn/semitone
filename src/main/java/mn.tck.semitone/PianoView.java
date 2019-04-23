@@ -164,8 +164,8 @@ public class PianoView extends View {
     }
 
     private int getPitch(MotionEvent ev, int pidx) {
-        int row = (int)(ev.getY(pidx) / whiteHeight),
-            key = (int)(ev.getX(pidx) / whiteWidth),
+        int row = Math.min((int)(ev.getY(pidx) / whiteHeight), rows-1),
+            key = Math.min((int)(ev.getX(pidx) / whiteWidth), keys-1),
             p = pitches[row][key];
 
         if (ev.getY(pidx) - row*whiteHeight < blackHeight) {
