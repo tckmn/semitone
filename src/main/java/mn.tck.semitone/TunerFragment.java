@@ -106,13 +106,15 @@ public class TunerFragment extends Fragment {
                 final int rounded = (int)Math.round(median);
                 final int note = Math.floorMod(rounded, 12);
 
-                if (getUserVisibleHint()) getActivity().runOnUiThread(new Runnable() {
-                    @Override public void run() {
-                        notename.setText(notenames[note] +
-                            (Math.floorDiv(rounded, 12) + 5 - (note <= 2 ? 1 : 0)));
-                        centerror.setError(median - rounded);
-                    }
-                });
+                if (getUserVisibleHint() && getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            notename.setText(notenames[note] +
+                                (Math.floorDiv(rounded, 12) + 5 - (note <= 2 ? 1 : 0)));
+                            centerror.setError(median - rounded);
+                        }
+                    });
+                }
             }
         }
     }
