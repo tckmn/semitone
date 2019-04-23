@@ -153,7 +153,7 @@ public class MetronomeFragment extends Fragment {
 
         tick.tempo = tempo;
         tick.subdiv = subdiv;
-        if (elapsedTime >= 1000 * tick.delayTime()) {
+        if (elapsedTime >= tick.delayTime()) {
             // immediate tick
             tick.nTicks = 0;
             tick.startTime = System.currentTimeMillis();
@@ -225,7 +225,7 @@ public class MetronomeFragment extends Fragment {
                         dots.get(activeDot).setImageDrawable(dotOn);
                     }
                 });
-                try { Thread.sleep(100); } catch (InterruptedException e) {}
+                try { Thread.sleep(Math.min(100, (long)(delayTime()/2))); } catch (InterruptedException e) {}
                 getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
                         dots.get(activeDot).setImageDrawable(dotOff);
@@ -238,10 +238,10 @@ public class MetronomeFragment extends Fragment {
         }
 
         protected long tickTime(int nTick) {
-            return startTime + Math.round(nTick * 1000 * delayTime());
+            return startTime + Math.round(nTick * delayTime());
         }
 
-        protected double delayTime() { return 60.0 / (tempo*subdiv); }
+        protected double delayTime() { return 1000 * 60.0 / (tempo*subdiv); }
     }
 
 }
