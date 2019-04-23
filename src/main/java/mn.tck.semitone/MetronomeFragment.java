@@ -88,7 +88,7 @@ public class MetronomeFragment extends Fragment {
         subdivBox.cb = new NumBox.Callback() {
             @Override public void onChange(int val) {
                 subdiv = val;
-                if (enabled) toggle();
+                intermediateTempoChange();
             }
         };
 
@@ -136,7 +136,7 @@ public class MetronomeFragment extends Fragment {
         if (enabled) {
             startBtn.setText("Stop");
             activeDot = -1;
-            tick = new Tick(tempo);
+            tick = new Tick(tempo, subdiv);
             tick.start();
         } else {
             startBtn.setText("Start");
@@ -144,13 +144,6 @@ public class MetronomeFragment extends Fragment {
                 tick.keepGoing = false;
                 tick.interrupt();
             }
-            removeDot();
-        }
-    }
-
-    protected void removeDot() {
-        if (activeDot >= 0 && activeDot < beats) {
-            dots.get(activeDot).setImageDrawable(dotOff);
         }
     }
 
@@ -159,7 +152,8 @@ public class MetronomeFragment extends Fragment {
         long elapsedTime = System.currentTimeMillis() - tick.tickTime(tick.nTicks - 1);
 
         tick.tempo = tempo;
-        if (elapsedTime >= 1000 * (60.0 / tick.tempo)) {
+        tick.subdiv = subdiv;
+        if (elapsedTime >= 1000 * tick.delayTime()) {
             // immediate tick
             tick.nTicks = 0;
             tick.startTime = System.currentTimeMillis();
@@ -196,11 +190,12 @@ public class MetronomeFragment extends Fragment {
     }
 
     class Tick extends Thread {
-        protected int tempo, nTicks;
+        protected int tempo, subdiv, nTicks;
         protected long startTime, nextTime;
         protected boolean keepGoing;
-        public Tick(int tempo) {
+        public Tick(int tempo, int subdiv) {
             this.tempo = tempo;
+            this.subdiv = subdiv;
             keepGoing = true;
         }
 
@@ -217,19 +212,23 @@ public class MetronomeFragment extends Fragment {
                 // }
                 else {
                     // we have a while - sleep and check again
-                    try { Thread.sleep(diff); }
-                    catch (InterruptedException e) {}
+                    try { Thread.sleep(diff); } catch (InterruptedException e) {}
                     continue;
                 }
 
                 // time for another tick
+                if (nTicks % subdiv == 0) activeDot = (activeDot + 1) % beats;
+                pool.play(activeDot == 0 && nTicks % subdiv == 0 ? strong : weak,
+                        1, 1, 1, 0, 1);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
-                        removeDot();
-                        activeDot = (activeDot + 1) % beats;
                         dots.get(activeDot).setImageDrawable(dotOn);
-
-                        pool.play(activeDot == 0 ? strong : weak, 1, 1, 1, 0, 1);
+                    }
+                });
+                try { Thread.sleep(100); } catch (InterruptedException e) {}
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        dots.get(activeDot).setImageDrawable(dotOff);
                     }
                 });
 
@@ -239,8 +238,10 @@ public class MetronomeFragment extends Fragment {
         }
 
         protected long tickTime(int nTick) {
-            return startTime + Math.round(nTick * 1000 * (60.0 / tempo));
+            return startTime + Math.round(nTick * 1000 * delayTime());
         }
+
+        protected double delayTime() { return 60.0 / (tempo*subdiv); }
     }
 
 }
