@@ -18,7 +18,7 @@ public class NumBox extends FrameLayout {
 
     public NumBox(Context context, AttributeSet attrs) {
         super(context, attrs);
-        view = inflate(context, R.layout.numbox, null);
+        view = inflate(context, R.layout.numbox, this);
         valueView = (EditText) view.findViewById(R.id.value);
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
@@ -65,8 +65,6 @@ public class NumBox extends FrameLayout {
                 return false;
             }
         });
-
-        addView(view);
     }
 
     public void setValue(int val) {

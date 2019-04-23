@@ -35,7 +35,8 @@
             android:layout_height="wrap_content"
             android:minEms="2"
             android:gravity="center"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:saveEnabled="false" />
 
         <TextView
             android:id="@+id/plus"
