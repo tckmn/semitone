@@ -12,10 +12,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+
         <mn.tck.semitone.NumBox
             android:id="@+id/rows"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="rows"
@@ -23,10 +24,11 @@
             semitone:minVal="1"
             semitone:maxVal="4" />
 
+        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+
         <mn.tck.semitone.NumBox
             android:id="@+id/keys"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="keys"
@@ -34,16 +36,19 @@
             semitone:minVal="3"
             semitone:maxVal="14" />
 
+        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+
         <mn.tck.semitone.NumBox
             android:id="@+id/pitch"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="pitch"
             semitone:value="48"
             semitone:minVal="1"
             semitone:maxVal="120" />
+
+        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
 
     </LinearLayout>
 

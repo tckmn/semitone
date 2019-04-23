@@ -7,6 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+
     <LinearLayout
         android:id="@+id/dots"
         android:layout_width="match_parent"
@@ -14,20 +16,18 @@
         android:orientation="horizontal"
         android:gravity="center" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2" />
+    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="2" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+
         <mn.tck.semitone.NumBox
             android:id="@+id/tempo"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="tempo"
@@ -35,10 +35,11 @@
             semitone:minVal="40"
             semitone:maxVal="400" />
 
+        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+
         <mn.tck.semitone.NumBox
             android:id="@+id/beats"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="beats"
@@ -46,16 +47,19 @@
             semitone:minVal="1"
             semitone:maxVal="8" />
 
+        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+
         <mn.tck.semitone.NumBox
             android:id="@+id/subdiv"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             semitone:label="subdiv"
             semitone:value="1"
             semitone:minVal="1"
             semitone:maxVal="4" />
+
+        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
 
     </LinearLayout>
 
@@ -66,10 +70,7 @@
         android:layout_marginTop="10dp"
         android:max="360" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2" />
+    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="2" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -92,9 +93,6 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
 
 </LinearLayout>
