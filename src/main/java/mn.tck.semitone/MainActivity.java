@@ -39,6 +39,7 @@ public class MainActivity extends FragmentActivity {
     static TunerFragment tf;
     static MetronomeFragment mf;
     static PianoFragment pf;
+    static String tt, mt, pt;
 
     static final int SETTINGS_INTENT_CODE = 123;
 
@@ -51,6 +52,10 @@ public class MainActivity extends FragmentActivity {
         if (!sp.contains("concert_a")) {
             sp.edit().putString("concert_a", "440").commit();
         }
+
+        tt = getResources().getString(R.string.tuner_title);
+        mt = getResources().getString(R.string.metronome_title);
+        pt = getResources().getString(R.string.piano_title);
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
@@ -94,9 +99,9 @@ public class MainActivity extends FragmentActivity {
         }
         @Override public CharSequence getPageTitle(int pos) {
             switch (pos) {
-            case 0: return "Tuner";
-            case 1: return "Metronome";
-            case 2: return "Piano";
+            case 0: return tt;
+            case 1: return mt;
+            case 2: return pt;
             default: return null;
             }
         }

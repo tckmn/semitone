@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            semitone:label="tempo"
+            semitone:label="@string/tempo_label"
             semitone:value="120"
             semitone:minVal="40"
             semitone:maxVal="400" />
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            semitone:label="beats"
+            semitone:label="@string/beats_label"
             semitone:value="4"
             semitone:minVal="1"
             semitone:maxVal="8" />
@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            semitone:label="subdiv"
+            semitone:label="@string/subdiv_label"
             semitone:value="1"
             semitone:minVal="1"
             semitone:maxVal="4" />
@@ -82,14 +82,14 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Start" />
+            android:text="@string/start_btn" />
 
         <Button
             android:id="@+id/tap"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Tap tempo" />
+            android:text="@string/tap_tempo_btn" />
 
     </LinearLayout>
 

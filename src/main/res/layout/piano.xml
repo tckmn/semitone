@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            semitone:label="rows"
+            semitone:label="@string/rows_label"
             semitone:value="2"
             semitone:minVal="1"
             semitone:maxVal="4" />
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            semitone:label="keys"
+            semitone:label="@string/keys_label"
             semitone:value="7"
             semitone:minVal="3"
             semitone:maxVal="14" />
@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            semitone:label="pitch"
+            semitone:label="@string/pitch_label"
             semitone:value="48"
             semitone:minVal="1"
             semitone:maxVal="120" />

@@ -142,12 +142,12 @@ public class MetronomeFragment extends Fragment {
     private void toggle() {
         enabled = !enabled;
         if (enabled) {
-            startBtn.setText("Stop");
+            startBtn.setText(getString(R.string.stop_btn));
             activeDot = -1;
             tick = new Tick(tempo, subdiv);
             tick.start();
         } else {
-            startBtn.setText("Start");
+            startBtn.setText(getString(R.string.start_btn));
             if (tick != null) {
                 tick.keepGoing = false;
                 tick.interrupt();
