@@ -23,9 +23,13 @@ JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_setFramesPerBurst
 }
 
 JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doPlay
-  (JNIEnv*, jclass, jlong handle, jdouble freq) {
+  (JNIEnv*, jclass, jlong handle, jint pitch) {
     PianoEngine *engine = reinterpret_cast<PianoEngine*>(handle);
-    if (engine != nullptr) {
-        engine->play(freq);
-    }
+    if (engine != nullptr) engine->play(pitch);
+}
+
+JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doStop
+  (JNIEnv*, jclass, jlong handle, jint pitch) {
+    PianoEngine *engine = reinterpret_cast<PianoEngine*>(handle);
+    if (engine != nullptr) engine->stop(pitch);
 }

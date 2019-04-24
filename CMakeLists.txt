@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4.1)
-add_library (semitone-native SHARED src/main/cpp/semitone-native.cpp src/main/cpp/PianoEngine.cpp)
+add_library (semitone-native SHARED src/main/cpp/semitone-native.cpp src/main/cpp/PianoEngine.cpp src/main/cpp/Tone.cpp)
 target_link_libraries (semitone-native oboe)
 add_subdirectory (./oboe ./oboe)
 include_directories (./oboe/include)

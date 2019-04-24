@@ -104,14 +104,14 @@ public class PianoView extends View {
         case MotionEvent.ACTION_DOWN:
             pid = ev.getPointerId(0); p = getPitch(ev, 0);
             pointers.put(pid, p);
-            playTone(p);
+            play(p);
             invalidate();
             return true;
 
         case MotionEvent.ACTION_POINTER_DOWN:
             pid = ev.getPointerId(ev.getActionIndex()); p = getPitch(ev, ev.getActionIndex());
             pointers.put(pid, p);
-            playTone(p);
+            play(p);
             invalidate();
             return true;
 
@@ -120,22 +120,22 @@ public class PianoView extends View {
             for (int i = 0; i < np; ++i) {
                 pid = ev.getPointerId(i); p = getPitch(ev, i);
                 if (pointers.get(pid) != p) {
-                    pressed[pointers.get(pid)] = false;
+                    stop(pointers.get(pid));
                     pointers.replace(pid, p);
+                    play(p);
                     anyChange = true;
-                    playTone(p);
                 }
             }
             if (anyChange) invalidate();
             return true;
 
         case MotionEvent.ACTION_UP:
-            pressed[pointers.remove(ev.getPointerId(0))] = false;
+            stop(pointers.remove(ev.getPointerId(0)));
             invalidate();
             return true;
 
         case MotionEvent.ACTION_POINTER_UP:
-            pressed[pointers.remove(ev.getPointerId(ev.getActionIndex()))] = false;
+            stop(pointers.remove(ev.getPointerId(ev.getActionIndex())));
             invalidate();
             return true;
 
@@ -159,10 +159,14 @@ public class PianoView extends View {
         return p < 0 || p > 128 ? 0 : p;
     }
 
-    private void playTone(int p) {
-        pressed[p] = true;
-        double freq = concert_a * Math.pow(2, (p - 69) / 12.0);
-        PianoEngine.play(freq);
+    private void play(int pitch) {
+        pressed[pitch] = true;
+        PianoEngine.play(pitch);
+    }
+
+    private void stop(int pitch) {
+        pressed[pitch] = false;
+        PianoEngine.stop(pitch);
     }
 
     private boolean hasBlackLeft(int p) { return p % 12 != 5 && p % 12 != 0; }

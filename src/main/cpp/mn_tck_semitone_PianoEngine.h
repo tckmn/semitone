@@ -45,7 +45,15 @@ JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_setFramesPerBurst
  * Signature: (JD)V
  */
 JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doPlay
-  (JNIEnv *, jclass, jlong, jdouble);
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     mn_tck_semitone_PianoEngine
+ * Method:    doPlay
+ * Signature: (JD)V
+ */
+JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doStop
+  (JNIEnv *, jclass, jlong, jint);
 
 #ifdef __cplusplus
 }

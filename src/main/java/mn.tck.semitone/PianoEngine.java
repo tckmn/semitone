@@ -31,14 +31,14 @@ public class PianoEngine {
         handle = 0;
     }
 
-    static void play(double freq) {
-        doPlay(handle, freq);
-    }
+    static void play(int pitch) { doPlay(handle, pitch); }
+    static void stop(int pitch) { doStop(handle, pitch); }
 
     private static native long createPianoEngine();
     private static native void destroyPianoEngine(long handle);
     private static native void setSampleRate(int val);
     private static native void setFramesPerBurst(int val);
-    private static native void doPlay(long handle, double freq);
+    private static native void doPlay(long handle, int pitch);
+    private static native void doStop(long handle, int pitch);
 
 }

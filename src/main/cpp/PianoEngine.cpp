@@ -36,19 +36,36 @@ void PianoEngine::deinit() {
     stream->close();
 }
 
-void PianoEngine::play(double freq) {
-    phaseIncrement = 2*M_PI * freq / oboe::DefaultStreamValues::SampleRate;
+void PianoEngine::play(int pitch) {
+    tonesLock.lock();
+    tones.push_front(Tone(pitch));
+    tonesLock.unlock();
+}
+
+void PianoEngine::stop(int pitch) {
+    tonesLock.lock();
+    tones.remove(Tone(pitch));
+    tonesLock.unlock();
 }
 
 oboe::DataCallbackResult PianoEngine::onAudioReady(oboe::AudioStream *stream, void *data, int32_t frames) {
     float *outBuf = is16bit ? buf16.get() : static_cast<float*>(data);
-    int channels = stream->getChannelCount();
+    tonesLock.lock();
+    int channels = stream->getChannelCount(), nTones = tones.size();
     for (int i = 0; i < frames; ++i) {
-        phase += phaseIncrement;
-        if (phase > 2*M_PI) phase -= 2*M_PI;
-        outBuf[i*channels] = phase < M_PI ? 0.5 : -0.5;
-        for (int ch = 1; ch < channels; ++ch) outBuf[i*channels+ch] = outBuf[i*channels];
+        float thing = 0;
+        if (nTones) {
+            for (Tone &t : tones) thing += t.tick();
+            thing /= nTones;
+            // if we simply divide by the number of tones, the difference
+            // between one tone and two played simultaneously is too dramatic,
+            // so scale single tones far down first and gradually bring them
+            // back up
+            thing *= 1-expf(-(nTones-1)*0.5f)/2;
+        }
+        for (int ch = 0; ch < channels; ++ch) outBuf[i*channels+ch] = thing;
     }
+    tonesLock.unlock();
     if (is16bit) oboe::convertFloatToPcm16(outBuf, static_cast<int16_t*>(data), frames*channels);
     return oboe::DataCallbackResult::Continue;
 }
