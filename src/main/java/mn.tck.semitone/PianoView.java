@@ -3,9 +3,6 @@ package mn.tck.semitone;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.media.AudioAttributes;
-import android.media.AudioFormat;
-import android.media.AudioTrack;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,10 +23,6 @@ public class PianoView extends View {
     int[][] pitches;
     boolean[] pressed;
     HashMap<Integer, Integer> pointers;
-
-    AudioAttributes aa;
-    AudioFormat af;
-    AudioTrack tracks[];
 
     int concert_a;
 
@@ -52,20 +45,8 @@ public class PianoView extends View {
         blackPaint = new Paint();
         blackPaint.setColor(ContextCompat.getColor(getContext(), R.color.black));
 
-        aa = new AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_GAME)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build();
-
-        af = new AudioFormat.Builder()
-            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-            .setSampleRate(SAMPLE_RATE)
-            .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
-            .build();
-
         pressed = new boolean[300];
         pointers = new HashMap<Integer, Integer>();
-        tracks = new AudioTrack[10];
     }
 
     public void updateParams(boolean inval) {
@@ -181,83 +162,7 @@ public class PianoView extends View {
     private void playTone(int p) {
         pressed[p] = true;
         double freq = concert_a * Math.pow(2, (p - 69) / 12.0);
-
-        // this will be used as a fallback if all slots are taken,
-        // so choose randomly
-        int pos = (int)(MAX_TRACKS*Math.random());
-        for (int i = 0; i < MAX_TRACKS; ++i) {
-            if (tracks[i] == null) pos = i;
-            else if (tracks[i].getPlaybackHeadPosition() == tracks[i].getBufferSizeInFrames()) {
-                tracks[i].release();
-                tracks[i] = null;
-                pos = i;
-            }
-        }
-
-        if (tracks[pos] != null) {
-            tracks[pos].stop();
-            tracks[pos].release();
-            tracks[pos] = null;
-        }
-
-        byte[] buf = genSound(SoundType.SHARP, freq,
-                0.01, 0.05, 0.4, 0);
-        try {
-            AudioTrack at = new AudioTrack.Builder()
-                .setAudioAttributes(aa)
-                .setAudioFormat(af)
-                .setBufferSizeInBytes(buf.length)
-                .build();
-            at.write(buf, 0, buf.length);
-            at.play();
-            tracks[pos] = at;
-        } catch (UnsupportedOperationException e) {
-            // usually happens when you freak out and mash a ton of keys, so we
-            // just play nothing since the user probably won't notice anyway
-        }
-    }
-
-    enum SoundType { SINE, SOFT, SHARP }
-    private byte[] genSound(SoundType st, double freq,
-            double attack, double sustain, double release, double noise) {
-        int samples = (int)((attack+sustain+release) * SAMPLE_RATE);
-        byte[] buf = new byte[samples*2];
-        for (int i = 0; i < samples; ++i) {
-            double unprocessed = 0;
-            switch (st) {
-            case SINE: unprocessed = Math.sin(2*Math.PI * freq * i / SAMPLE_RATE); break;
-            case SOFT: unprocessed =
-                0.500*Math.sin(2*Math.PI * 1*freq * i / SAMPLE_RATE) +
-                0.250*Math.sin(2*Math.PI * 2*freq * i / SAMPLE_RATE) +
-                0.125*Math.sin(2*Math.PI * 3*freq * i / SAMPLE_RATE) +
-                0.050*Math.sin(2*Math.PI * 4*freq * i / SAMPLE_RATE) +
-                0.025*Math.sin(2*Math.PI * 5*freq * i / SAMPLE_RATE); break;
-            case SHARP: unprocessed =
-                0.5*Math.sin(2*Math.PI * 1*freq * i / SAMPLE_RATE) +
-                0.4*Math.sin(2*Math.PI * 2*freq * i / SAMPLE_RATE) +
-                0.3*Math.sin(2*Math.PI * 3*freq * i / SAMPLE_RATE) +
-                0.2*Math.sin(2*Math.PI * 4*freq * i / SAMPLE_RATE) +
-                0.1*Math.sin(2*Math.PI * 5*freq * i / SAMPLE_RATE); break;
-            }
-
-            // TODO not just linear
-            double multiplier = 1;
-            if (i <= attack*SAMPLE_RATE) multiplier = i / (attack*SAMPLE_RATE);
-            else if (i >= (attack+sustain)*SAMPLE_RATE) multiplier = (samples-i) / (release*SAMPLE_RATE);
-            unprocessed *= multiplier;
-
-            // adjust for frequency
-            if (freq > 400) unprocessed *= Math.pow(400/freq, 1.3);
-
-            unprocessed += (Math.random()-0.5)*noise;
-
-            final short amplitude = 30000;
-            short val = (short)Math.min(amplitude, Math.max(-amplitude,
-                        amplitude*unprocessed));
-            buf[i*2] = (byte)(val & 0x00ff);
-            buf[i*2+1] = (byte)((val & 0xff00) >> 8);
-        }
-        return buf;
+        PianoEngine.play(freq);
     }
 
     private boolean hasBlackLeft(int p) { return p % 12 != 5 && p % 12 != 0; }
