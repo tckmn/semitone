@@ -35,6 +35,12 @@ android {
     defaultConfig {
         applicationId "mn.tck.semitone"
     }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
 }
 
 gradle.projectsEvaluated {
