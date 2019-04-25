@@ -20,12 +20,17 @@
 #define __PIANO_ENGINE_H__
 
 #include <thread>
-#include <list>
 #include <android/asset_manager.h>
 #include <oboe/Oboe.h>
 
 #include "Tone.h"
 #include "Sound.h"
+
+#define MAX_TONES  100
+#define MAX_SOUNDS 200
+
+#define TONE_MODE  1
+#define SOUND_MODE 2
 
 class PianoEngine : oboe::AudioStreamCallback {
 
@@ -49,8 +54,9 @@ private:
     bool is16bit;
     std::unique_ptr<float[]> buf16;
 
-    std::list<Tone> tones;
-    std::list<Sound> sounds;
+    Tone *tones[MAX_TONES] = {nullptr};
+    Sound *sounds[MAX_SOUNDS] = {nullptr};
+    int mode = TONE_MODE;
 
     std::mutex restartLock, tonesLock, soundsLock;
 

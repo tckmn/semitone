@@ -23,10 +23,10 @@ class Tone {
 public:
     Tone(int pitch);
     float tick();
-    bool operator==(const Tone&) const;
+    int pitch;
+    bool stopped;
 
 private:
-    int pitch;
     float phase, phaseIncrement;
 };
 
