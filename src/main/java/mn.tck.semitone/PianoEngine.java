@@ -19,6 +19,7 @@
 package mn.tck.semitone;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.media.AudioManager;
 import android.os.Build;
 
@@ -32,7 +33,7 @@ public class PianoEngine {
 
     static boolean create(Context context) {
         if (handle != 0) return true;
-        handle = createPianoEngine();
+        handle = createPianoEngine(context.getAssets());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             setSampleRate(Integer.parseInt(am.getProperty(
@@ -51,12 +52,14 @@ public class PianoEngine {
 
     static void play(int pitch) { doPlay(handle, pitch); }
     static void stop(int pitch) { doStop(handle, pitch); }
+    static void playFile(String path) { doPlayFile(handle, path); }
 
-    private static native long createPianoEngine();
+    private static native long createPianoEngine(AssetManager am);
     private static native void destroyPianoEngine(long handle);
     private static native void setSampleRate(int val);
     private static native void setFramesPerBurst(int val);
     private static native void doPlay(long handle, int pitch);
     private static native void doStop(long handle, int pitch);
+    private static native void doPlayFile(long handle, String path);
 
 }

@@ -16,13 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <android/asset_manager_jni.h>
 #include <oboe/Oboe.h>
 #include "mn_tck_semitone_PianoEngine.h"
 #include "PianoEngine.h"
 
 JNIEXPORT jlong JNICALL Java_mn_tck_semitone_PianoEngine_createPianoEngine
-  (JNIEnv*, jclass) {
-    return reinterpret_cast<jlong>(new(std::nothrow) PianoEngine());
+  (JNIEnv *env, jclass, jobject am) {
+    return reinterpret_cast<jlong>(new(std::nothrow) PianoEngine(*AAssetManager_fromJava(env, am)));
 }
 
 JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_destroyPianoEngine
@@ -50,4 +51,10 @@ JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doStop
   (JNIEnv*, jclass, jlong handle, jint pitch) {
     PianoEngine *engine = reinterpret_cast<PianoEngine*>(handle);
     if (engine != nullptr) engine->stop(pitch);
+}
+
+JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doPlayFile
+  (JNIEnv *env, jclass, jlong handle, jstring path) {
+    PianoEngine *engine = reinterpret_cast<PianoEngine*>(handle);
+    if (engine != nullptr) engine->playFile(env->GetStringUTFChars(path, 0));
 }

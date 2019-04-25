@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     mn_tck_semitone_PianoEngine
  * Method:    createPianoEngine
- * Signature: ()J
+ * Signature: (Landroid/content/res/AssetManager;)J
  */
 JNIEXPORT jlong JNICALL Java_mn_tck_semitone_PianoEngine_createPianoEngine
-  (JNIEnv *, jclass);
+  (JNIEnv *, jclass, jobject);
 
 /*
  * Class:     mn_tck_semitone_PianoEngine
@@ -42,18 +42,26 @@ JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_setFramesPerBurst
 /*
  * Class:     mn_tck_semitone_PianoEngine
  * Method:    doPlay
- * Signature: (JD)V
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doPlay
   (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     mn_tck_semitone_PianoEngine
- * Method:    doPlay
- * Signature: (JD)V
+ * Method:    doStop
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doStop
   (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     mn_tck_semitone_PianoEngine
+ * Method:    doPlayFile
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doPlayFile
+  (JNIEnv *, jclass, jlong, jstring);
 
 #ifdef __cplusplus
 }

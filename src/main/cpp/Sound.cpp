@@ -16,18 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TONE_H__
-#define __TONE_H__
+#include "Sound.h"
 
-class Tone {
-public:
-    Tone(int pitch);
-    float tick();
-    bool operator==(const Tone&) const;
-
-private:
-    int pitch;
-    float phase, phaseIncrement;
-};
-
-#endif
+Sound::Sound(AAssetManager &am, const char *path) {
+    AAsset *a = AAssetManager_open(&am, path, AASSET_MODE_UNKNOWN);
+}

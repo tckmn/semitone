@@ -28,7 +28,7 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,   "semitone", __VA_ARGS__)
 #define LOGF(...) __android_log_print(ANDROID_LOG_FATAL,   "semitone", __VA_ARGS__)
 
-PianoEngine::PianoEngine() { init(); }
+PianoEngine::PianoEngine(AAssetManager &am) : am(am) { init(); }
 PianoEngine::~PianoEngine() { deinit(); }
 
 void PianoEngine::init() {
@@ -64,6 +64,12 @@ void PianoEngine::stop(int pitch) {
     tonesLock.lock();
     tones.remove(Tone(pitch));
     tonesLock.unlock();
+}
+
+void PianoEngine::playFile(const char *path) {
+    soundsLock.lock();
+    sounds.push_front(Sound(am, path));
+    soundsLock.unlock();
 }
 
 oboe::DataCallbackResult PianoEngine::onAudioReady(oboe::AudioStream *stream, void *data, int32_t frames) {
