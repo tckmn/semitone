@@ -41,6 +41,12 @@ android {
             path "CMakeLists.txt"
         }
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ["shared"]
+        }
+    }
 }
 
 gradle.projectsEvaluated {
