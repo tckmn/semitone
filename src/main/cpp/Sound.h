@@ -19,11 +19,14 @@
 #ifndef __SOUND_H__
 #define __SOUND_H__
 
+#include <memory>
 #include <android/asset_manager.h>
 
 class Sound {
 public:
-    Sound(AAssetManager &am, const char *path);
+    Sound(AAssetManager &am, const char *path, int channels);
+    std::unique_ptr<float[]> data;
+    size_t nSamples, offset;
 };
 
 #endif

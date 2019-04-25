@@ -179,12 +179,13 @@ public class PianoView extends View {
 
     private void play(int pitch) {
         pressed[pitch] = true;
-        PianoEngine.play(pitch);
+        PianoEngine.playFile("piano/"+pitch+".mp3");
+        // PianoEngine.play(pitch);
     }
 
     private void stop(int pitch) {
         pressed[pitch] = false;
-        PianoEngine.stop(pitch);
+        // PianoEngine.stop(pitch);
     }
 
     private boolean hasBlackLeft(int p) { return p % 12 != 5 && p % 12 != 0; }

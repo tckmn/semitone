@@ -68,28 +68,46 @@ void PianoEngine::stop(int pitch) {
 
 void PianoEngine::playFile(const char *path) {
     soundsLock.lock();
-    sounds.push_front(Sound(am, path));
+    sounds.push_front(Sound(am, path, 1));
     soundsLock.unlock();
 }
 
 oboe::DataCallbackResult PianoEngine::onAudioReady(oboe::AudioStream *stream, void *data, int32_t frames) {
     float *outBuf = is16bit ? buf16.get() : static_cast<float*>(data);
-    tonesLock.lock();
-    int channels = stream->getChannelCount(), nTones = tones.size();
-    for (int i = 0; i < frames; ++i) {
-        float thing = 0;
-        if (nTones) {
-            for (Tone &t : tones) thing += t.tick();
-            thing /= nTones;
-            // if we simply divide by the number of tones, the difference
-            // between one tone and two played simultaneously is too dramatic,
-            // so scale single tones far down first and gradually bring them
-            // back up
-            thing *= 1-expf(-(nTones-1)*0.5f)/2;
+    int channels = stream->getChannelCount();
+
+    if (tones.size()) {
+        tonesLock.lock();
+        int nTones = tones.size();
+        for (int i = 0; i < frames; ++i) {
+            float thing = 0;
+            if (nTones) {
+                for (Tone &t : tones) thing += t.tick();
+                thing /= nTones;
+                // if we simply divide by the number of tones, the difference
+                // between one tone and two played simultaneously is too dramatic,
+                // so scale single tones far down first and gradually bring them
+                // back up
+                thing *= 1-expf(-(nTones-1)*0.5f)/2;
+            }
+            for (int ch = 0; ch < channels; ++ch) outBuf[i*channels+ch] = thing;
         }
-        for (int ch = 0; ch < channels; ++ch) outBuf[i*channels+ch] = thing;
+        tonesLock.unlock();
+    } else {
+        soundsLock.lock();
+        for (int i = 0; i < frames; ++i) {
+            float thing = 0;
+            for (auto it = sounds.begin(); it != sounds.end();) {
+                float *data = it->data.get();
+                thing += data[it->offset];
+                if (++(it->offset) == it->nSamples) sounds.erase(it++);
+                else ++it;
+            }
+            for (int ch = 0; ch < channels; ++ch) outBuf[i*channels+ch] = thing;
+        }
+        soundsLock.unlock();
     }
-    tonesLock.unlock();
+
     if (is16bit) oboe::convertFloatToPcm16(outBuf, static_cast<int16_t*>(data), frames*channels);
     return oboe::DataCallbackResult::Continue;
 }
