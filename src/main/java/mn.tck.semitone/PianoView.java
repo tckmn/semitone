@@ -50,7 +50,7 @@ public class PianoView extends View {
 
         rows = 2;
         keys = 7;
-        pitch = 48;
+        pitch = 28;
         updateParams(false);
 
         whitePaint = new Paint();
@@ -71,7 +71,8 @@ public class PianoView extends View {
     public void updateParams(boolean inval) {
         pitches = new int[rows][keys];
 
-        int p = pitch;
+        int p = 0;
+        for (int i = 0; i < pitch; ++i) p += hasBlackRight(p) ? 2 : 1;
         for (int row = 0; row < rows; ++row) {
             for (int key = 0; key < keys; ++key) {
                 pitches[row][key] = p;
