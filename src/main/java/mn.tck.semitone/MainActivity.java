@@ -48,6 +48,8 @@ public class MainActivity extends FragmentActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
+        PianoEngine.create(this);
+
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor e = sp.edit();
         if (!sp.contains("concert_a")) e.putString("concert_a", "440");
@@ -74,6 +76,11 @@ public class MainActivity extends FragmentActivity {
                 startActivityForResult(intent, SETTINGS_INTENT_CODE);
             }
         });
+    }
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        PianoEngine.destroy();
     }
 
     @Override public void onActivityResult(int code, int res, Intent data) {

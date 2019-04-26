@@ -21,8 +21,6 @@ package mn.tck.semitone;
 import android.content.Context;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.media.AudioAttributes;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -60,7 +58,6 @@ public class MetronomeFragment extends Fragment {
     LinearLayout.LayoutParams dotParams;
 
     Tick tick;
-    SoundPool pool;
     int strong, weak;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
@@ -69,16 +66,6 @@ public class MetronomeFragment extends Fragment {
 
     @Override public void onViewCreated(View view, Bundle state) {
         this.view = view;
-
-        pool = new SoundPool.Builder()
-            .setMaxStreams(4)
-            .setAudioAttributes(new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build())
-            .build();
-        strong = pool.load(getContext(), R.raw.strong, 1);
-        weak = pool.load(getContext(), R.raw.weak, 1);
 
         tempo = 120; beats = 4; subdiv = 1; enabled = false;
         tempoBox = (NumBox) view.findViewById(R.id.tempo);
@@ -139,11 +126,6 @@ public class MetronomeFragment extends Fragment {
 
         dots = new ArrayList<Dot>();
         intermediateBeatChange();
-    }
-
-    @Override public void onDestroyView() {
-        super.onDestroyView();
-        pool.release();
     }
 
     public void onSettingsChanged() {
@@ -239,8 +221,8 @@ public class MetronomeFragment extends Fragment {
 
                 // time for another tick
                 if (nTicks % subdiv == 0) activeDot = (activeDot + 1) % beats;
-                pool.play(nTicks % subdiv == 0 && dots.get(activeDot).big ? strong : weak,
-                        1, 1, 1, 0, 1);
+                PianoEngine.playFile(nTicks % subdiv == 0 && dots.get(activeDot).big ?
+                        "strong.mp3" : "weak.mp3");
                 getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
                         dots.get(activeDot).turnOn();

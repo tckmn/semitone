@@ -40,8 +40,6 @@ public class PianoFragment extends Fragment {
     @Override public void onViewCreated(View view, Bundle state) {
         this.view = view;
 
-        PianoEngine.create(getContext());
-
         rowsBox = (NumBox) view.findViewById(R.id.rows);
         keysBox = (NumBox) view.findViewById(R.id.keys);
         pitchBox = (NumBox) view.findViewById(R.id.pitch);
@@ -69,11 +67,6 @@ public class PianoFragment extends Fragment {
         };
 
         onSettingsChanged();
-    }
-
-    @Override public void onDestroyView() {
-        super.onDestroyView();
-        PianoEngine.destroy();
     }
 
     public void onSettingsChanged() {
