@@ -21,7 +21,7 @@
 
 class Tone {
 public:
-    Tone(int pitch);
+    Tone(int pitch, int concert_a);
     float tick();
     int pitch;
     bool stopped;

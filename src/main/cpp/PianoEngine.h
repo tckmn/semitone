@@ -37,7 +37,7 @@ class PianoEngine : oboe::AudioStreamCallback {
 public:
     explicit PianoEngine(AAssetManager &am);
     ~PianoEngine();
-    void play(int pitch);
+    void play(int pitch, int concert_a);
     void stop(int pitch);
     void playFile(const char *path);
 

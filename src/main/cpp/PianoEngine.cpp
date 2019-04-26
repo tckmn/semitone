@@ -54,12 +54,12 @@ void PianoEngine::deinit() {
     stream->close();
 }
 
-void PianoEngine::play(int pitch) {
+void PianoEngine::play(int pitch, int concert_a) {
     mode = TONE_MODE;
     tonesLock.lock();
     for (int i = 0; i < MAX_TONES; ++i) {
         if (tones[i] == nullptr) {
-            tones[i] = new Tone(pitch);
+            tones[i] = new Tone(pitch, concert_a);
             break;
         }
     }
