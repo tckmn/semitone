@@ -114,6 +114,10 @@ public class PianoView extends View {
     }
 
     @Override public boolean onTouchEvent(MotionEvent ev) {
+        // we want to be able to swipe on the piano without swiping to a
+        // different tab
+        getParent().requestDisallowInterceptTouchEvent(true);
+
         int np = ev.getPointerCount();
         int pid, p;
 
