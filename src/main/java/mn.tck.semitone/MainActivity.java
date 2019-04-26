@@ -49,9 +49,10 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        if (!sp.contains("concert_a")) {
-            sp.edit().putString("concert_a", "440").commit();
-        }
+        SharedPreferences.Editor e = sp.edit();
+        if (!sp.contains("concert_a")) e.putString("concert_a", "440");
+        if (!sp.contains("sustain")) e.putBoolean("sustain", false);
+        e.commit();
 
         tt = getResources().getString(R.string.tuner_title);
         mt = getResources().getString(R.string.metronome_title);

@@ -16,4 +16,14 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/settings_piano">
+
+        <CheckBoxPreference
+            android:key="sustain"
+            android:title="@string/sustain_title"
+            android:summary="@string/sustain_summary" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

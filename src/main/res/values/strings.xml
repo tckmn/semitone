@@ -4,12 +4,20 @@
 
     <string name="app_name">Semitone</string>
 
+    <!-- SETTINGS -->
+
     <string name="settings_title">Settings</string>
     <string name="settings_global">Global settings</string>
+    <string name="settings_piano">Piano</string>
 
     <string name="concert_a_title">A4 pitch</string>
     <string name="concert_a_summary">Set the frequency of A4 (for alternative tunings)</string>
     <string name="concert_a_dialog">A4 pitch (in Hz)</string>
+
+    <string name="sustain_title">Sustain</string>
+    <string name="sustain_summary">If disabled, pressing a key will play a piano sound; if enabled, a synthesized sound will be played while a key is held and stop when the key is released</string>
+
+    <!-- TAB-SPECIFIC -->
 
     <string name="tuner_title">Tuner</string>
 

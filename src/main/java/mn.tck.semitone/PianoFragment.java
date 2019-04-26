@@ -83,6 +83,7 @@ public class PianoFragment extends Fragment {
         } catch (NumberFormatException e) {
             piano.concert_a = 440;
         }
+        piano.sustain = sp.getBoolean("sustain", false);
     }
 
 }

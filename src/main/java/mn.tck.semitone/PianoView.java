@@ -43,6 +43,7 @@ public class PianoView extends View {
     HashMap<Integer, Integer> pointers;
 
     int concert_a;
+    boolean sustain;
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -183,13 +184,13 @@ public class PianoView extends View {
 
     private void play(int pitch) {
         pressed[pitch] = true;
-        PianoEngine.playFile("piano/"+pitch+".mp3");
-        // PianoEngine.play(pitch);
+        if (sustain) PianoEngine.play(pitch);
+        else PianoEngine.playFile("piano/"+pitch+".mp3");
     }
 
     private void stop(int pitch) {
         pressed[pitch] = false;
-        // PianoEngine.stop(pitch);
+        if (sustain) PianoEngine.stop(pitch);
     }
 
     private boolean hasBlackLeft(int p) { return p % 12 != 5 && p % 12 != 0; }
