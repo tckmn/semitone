@@ -73,12 +73,12 @@ void PianoEngine::stop(int pitch) {
     }
 }
 
-void PianoEngine::playFile(const char *path) {
+void PianoEngine::playFile(const char *path, int concert_a) {
     mode = SOUND_MODE;
     soundsLock.lock();
     for (int i = 0; i < MAX_SOUNDS; ++i) {
         if (sounds[i] == nullptr) {
-            sounds[i] = new Sound(am, path, 1);
+            sounds[i] = new Sound(am, path, concert_a, 1);
             break;
         }
     }

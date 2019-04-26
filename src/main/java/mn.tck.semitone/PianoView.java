@@ -185,7 +185,7 @@ public class PianoView extends View {
     private void play(int pitch) {
         pressed[pitch] = true;
         if (sustain) PianoEngine.play(pitch, concert_a);
-        else PianoEngine.playFile("piano/"+pitch+".mp3");
+        else PianoEngine.playFile("piano/"+pitch+".mp3", concert_a);
     }
 
     private void stop(int pitch) {

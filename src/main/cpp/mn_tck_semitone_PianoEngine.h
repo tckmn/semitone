@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doStop
  * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doPlayFile
-  (JNIEnv *, jclass, jlong, jstring);
+  (JNIEnv *, jclass, jlong, jstring, jint);
 
 #ifdef __cplusplus
 }

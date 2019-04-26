@@ -51,7 +51,7 @@ int64_t seek(void *ptr, int64_t offset, int whence) {
 }
 
 // TODO check for errors here
-Sound::Sound(AAssetManager &am, const char *path, int channels) {
+Sound::Sound(AAssetManager &am, const char *path, int concert_a, int channels) {
     AAsset *a = AAssetManager_open(&am, path, AASSET_MODE_UNKNOWN);
 
     // we're guessing it won't be compressed more than 12x
@@ -97,10 +97,10 @@ Sound::Sound(AAssetManager &am, const char *path, int channels) {
 
     // initialize software resampler
     SwrContext *swr = swr_alloc();
-    av_opt_set_int(swr, "in_channel_count",  stream->codecpar->channels,       0);
-    av_opt_set_int(swr, "in_channel_layout", stream->codecpar->channel_layout, 0);
-    av_opt_set_int(swr, "in_sample_rate",    stream->codecpar->sample_rate,    0);
-    av_opt_set_int(swr, "in_sample_fmt",     stream->codecpar->format,         0);
+    av_opt_set_int(swr, "in_channel_count",  stream->codecpar->channels,                      0);
+    av_opt_set_int(swr, "in_channel_layout", stream->codecpar->channel_layout,                0);
+    av_opt_set_int(swr, "in_sample_rate",    (concert_a/440.0)*stream->codecpar->sample_rate, 0);
+    av_opt_set_int(swr, "in_sample_fmt",     stream->codecpar->format,                        0);
     av_opt_set_int(swr,        "out_channel_count",  channels,                              0);
     av_opt_set_int(swr,        "out_channel_layout", (1 << channels) - 1,                   0);
     av_opt_set_int(swr,        "out_sample_rate",    oboe::DefaultStreamValues::SampleRate, 0);

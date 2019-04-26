@@ -52,7 +52,7 @@ public class PianoEngine {
 
     static void play(int pitch, int concert_a) { doPlay(handle, pitch, concert_a); }
     static void stop(int pitch) { doStop(handle, pitch); }
-    static void playFile(String path) { doPlayFile(handle, path); }
+    static void playFile(String path, int concert_a) { doPlayFile(handle, path, concert_a); }
 
     private static native long createPianoEngine(AssetManager am);
     private static native void destroyPianoEngine(long handle);
@@ -60,6 +60,6 @@ public class PianoEngine {
     private static native void setFramesPerBurst(int val);
     private static native void doPlay(long handle, int pitch, int concert_a);
     private static native void doStop(long handle, int pitch);
-    private static native void doPlayFile(long handle, String path);
+    private static native void doPlayFile(long handle, String path, int concert_a);
 
 }

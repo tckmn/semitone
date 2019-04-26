@@ -39,7 +39,7 @@ public:
     ~PianoEngine();
     void play(int pitch, int concert_a);
     void stop(int pitch);
-    void playFile(const char *path);
+    void playFile(const char *path, int concert_a);
 
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream *stream, void *data, int32_t frames);
     void onErrorAfterClose(oboe::AudioStream *stream, oboe::Result err);

@@ -225,7 +225,7 @@ public class MetronomeFragment extends SemitoneFragment {
                 // time for another tick
                 if (nTicks % subdiv == 0) activeDot = (activeDot + 1) % beats;
                 PianoEngine.playFile(nTicks % subdiv == 0 && dots.get(activeDot).big ?
-                        "strong.mp3" : "weak.mp3");
+                        "strong.mp3" : "weak.mp3", 440);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
                         dots.get(activeDot).turnOn();
