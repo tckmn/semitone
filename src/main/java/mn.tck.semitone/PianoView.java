@@ -43,7 +43,7 @@ public class PianoView extends View {
     HashMap<Integer, Integer> pointers;
 
     int concert_a;
-    boolean sustain;
+    boolean sustain, labelnotes;
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -63,6 +63,7 @@ public class PianoView extends View {
         grey4Paint.setColor(ContextCompat.getColor(getContext(), R.color.grey4));
         blackPaint = new Paint();
         blackPaint.setColor(ContextCompat.getColor(getContext(), R.color.black));
+        blackPaint.setTextAlign(Paint.Align.CENTER);
 
         pressed = new boolean[300];
         pointers = new HashMap<Integer, Integer>();
@@ -91,6 +92,7 @@ public class PianoView extends View {
         whiteHeight = height / rows;
         blackWidth = whiteWidth * 2 / 3;
         blackHeight = whiteHeight / 2;
+        blackPaint.setTextSize(Util.maxTextSize("G0", whiteWidth * 3/4));
 
         for (int row = 0; row < rows; ++row) {
             for (int key = 0; key < keys; ++key) {
@@ -101,6 +103,10 @@ public class PianoView extends View {
                 canvas.drawRect(x + OUTLINE, y, x + whiteWidth - OUTLINE,
                         y + whiteHeight - OUTLINE*2 - YPAD,
                         pressed[p] ? grey4Paint : whitePaint);
+
+                if (labelnotes) canvas.drawText(
+                        Util.notenames[(p+3)%12] + (p/12 - 1),
+                        x + whiteWidth/2, y + whiteHeight*3/4, blackPaint);
 
                 if (hasBlackLeft(p)) canvas.drawRect(
                         x, y,

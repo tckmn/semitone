@@ -15,7 +15,10 @@
     <string name="concert_a_dialog">A4 pitch (in Hz)</string>
 
     <string name="sustain_title">Sustain</string>
-    <string name="sustain_summary">If disabled, pressing a key will play a piano sound; if enabled, a synthesized sound will be played while a key is held and stop when the key is released</string>
+    <string name="sustain_summary">If disabled, pressing a key will play a piano sound; if enabled, a synthesized sound will play while a key is held and stop when the key is released</string>
+
+    <string name="labelnotes_title">Label notes</string>
+    <string name="labelnotes_summary">Show note names on piano keys</string>
 
     <!-- TAB-SPECIFIC -->
 

@@ -24,6 +24,11 @@
             android:title="@string/sustain_title"
             android:summary="@string/sustain_summary" />
 
+        <CheckBoxPreference
+            android:key="labelnotes"
+            android:title="@string/labelnotes_title"
+            android:summary="@string/labelnotes_summary" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

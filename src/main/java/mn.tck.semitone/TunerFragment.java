@@ -36,8 +36,6 @@ import java.util.Arrays;
 
 public class TunerFragment extends SemitoneFragment {
 
-    final static String[] notenames = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
-
     final static int SAMPLE_RATE = 44100;
     final static int HIST_SIZE = 16;
     int bufsize;
@@ -139,7 +137,7 @@ public class TunerFragment extends SemitoneFragment {
                 if (getUserVisibleHint() && getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override public void run() {
-                            notename.setText(notenames[note] +
+                            notename.setText(Util.notenames[note] +
                                 (Math.floorDiv(rounded, 12) + 5 - (note <= 2 ? 1 : 0)));
                             centerror.setError(median - rounded);
                         }

@@ -56,6 +56,7 @@ public class MainActivity extends FragmentActivity {
         SharedPreferences.Editor e = sp.edit();
         if (!sp.contains("concert_a")) e.putString("concert_a", "440");
         if (!sp.contains("sustain")) e.putBoolean("sustain", false);
+        if (!sp.contains("labelnotes")) e.putBoolean("labelnotes", false);
         e.commit();
 
         tt = getResources().getString(R.string.tuner_title);
