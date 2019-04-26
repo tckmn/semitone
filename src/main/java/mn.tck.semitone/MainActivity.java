@@ -43,6 +43,8 @@ public class MainActivity extends FragmentActivity {
 
     static final int SETTINGS_INTENT_CODE = 123;
 
+    int lastPos = 0;
+
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -67,6 +69,16 @@ public class MainActivity extends FragmentActivity {
         pager.setAdapter(adapter);
         tabs.setupWithViewPager(pager);
 
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override public void onPageScrollStateChanged(int state) {}
+            @Override public void onPageScrolled(int pos, float off1, int off2) {}
+            @Override public void onPageSelected(int pos) {
+                sendFocused(lastPos, false);
+                sendFocused(pos, true);
+                lastPos = pos;
+            }
+        });
+
         fullscreen = (ImageView) findViewById(R.id.fullscreen);
         settings = (ImageView) findViewById(R.id.settings);
 
@@ -81,6 +93,28 @@ public class MainActivity extends FragmentActivity {
     @Override protected void onDestroy() {
         super.onDestroy();
         PianoEngine.destroy();
+    }
+
+    @Override protected void onPause() {
+        super.onPause();
+        sendFocused(lastPos, false);
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        sendFocused(lastPos, true);
+    }
+
+    private void sendFocused(int idx, boolean focused) {
+        SemitoneFragment sf = null;
+        switch (idx) {
+        case 0: sf = tf; break;
+        case 1: sf = mf; break;
+        case 2: sf = pf; break;
+        }
+        if (sf != null) {
+            if (focused) sf.onFocused(); else sf.onUnfocused();
+        }
     }
 
     @Override public void onActivityResult(int code, int res, Intent data) {

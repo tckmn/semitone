@@ -32,12 +32,11 @@ import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 
-public class MetronomeFragment extends Fragment {
+public class MetronomeFragment extends SemitoneFragment {
 
     final int MIN_TEMPO = 40;
     final int MAX_TEMPO = 400;
@@ -128,7 +127,11 @@ public class MetronomeFragment extends Fragment {
         intermediateBeatChange();
     }
 
-    public void onSettingsChanged() {
+    @Override public void onSettingsChanged() {}
+    @Override public void onFocused() {}
+
+    @Override public void onUnfocused() {
+        if (enabled) toggle();
     }
 
     private ShapeDrawable makeDot(int size, int color) {

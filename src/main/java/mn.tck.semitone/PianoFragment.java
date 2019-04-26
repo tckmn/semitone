@@ -23,10 +23,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 
-public class PianoFragment extends Fragment {
+public class PianoFragment extends SemitoneFragment {
 
     NumBox rowsBox, keysBox, pitchBox;
     PianoView piano;
@@ -69,7 +68,7 @@ public class PianoFragment extends Fragment {
         onSettingsChanged();
     }
 
-    public void onSettingsChanged() {
+    @Override public void onSettingsChanged() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
         try {
             piano.concert_a = Integer.parseInt(sp.getString("concert_a", "440"));
@@ -78,5 +77,8 @@ public class PianoFragment extends Fragment {
         }
         piano.sustain = sp.getBoolean("sustain", false);
     }
+
+    @Override public void onFocused() {}
+    @Override public void onUnfocused() {}
 
 }

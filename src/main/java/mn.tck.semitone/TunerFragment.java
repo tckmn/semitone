@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
-import android.support.v4.app.Fragment;
 import android.util.TypedValue;
 import android.support.v7.preference.PreferenceManager;
 
@@ -35,7 +34,7 @@ import android.media.MediaRecorder.AudioSource;
 
 import java.util.Arrays;
 
-public class TunerFragment extends Fragment {
+public class TunerFragment extends SemitoneFragment {
 
     final static String[] notenames = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
 
@@ -73,28 +72,41 @@ public class TunerFragment extends Fragment {
         ar = new AudioRecord(AudioSource.MIC, SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 bufsize);
-        ar.startRecording();
 
         DSP.init(bufsize);
 
-        tunerThread = new Thread(new TunerThread());
-        tunerThread.start();
-
+        onFocused(); // this is a hack - when app is opened onFocused() isn't called
         onSettingsChanged();
     }
 
     @Override public void onDestroyView() {
         super.onDestroyView();
-        ar.stop();
-        tunerThread.interrupt();
+        onUnfocused();
+        ar.release();
     }
 
-    public void onSettingsChanged() {
+    @Override public void onSettingsChanged() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
         try {
             concert_a = Integer.parseInt(sp.getString("concert_a", "440"));
         } catch (NumberFormatException e) {
             concert_a = 440;
+        }
+    }
+
+    @Override public synchronized void onFocused() {
+        if (tunerThread == null) {
+            ar.startRecording();
+            tunerThread = new Thread(new TunerThread());
+            tunerThread.start();
+        }
+    }
+
+    @Override public synchronized void onUnfocused() {
+        if (tunerThread != null) {
+            ar.stop();
+            tunerThread.interrupt();
+            tunerThread = null;
         }
     }
 
