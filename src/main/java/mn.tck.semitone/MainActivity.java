@@ -113,7 +113,7 @@ public class MainActivity extends FragmentActivity {
         case 1: sf = mf; break;
         case 2: sf = pf; break;
         }
-        if (sf != null) {
+        if (sf != null && sf.isAdded()) {
             if (focused) sf.onFocused(); else sf.onUnfocused();
         }
     }

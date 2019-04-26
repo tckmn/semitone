@@ -67,9 +67,7 @@ public class TunerFragment extends SemitoneFragment {
 
         bufsize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-        ar = new AudioRecord(AudioSource.MIC, SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
-                bufsize);
+        ar = null;
 
         DSP.init(bufsize);
 
@@ -77,8 +75,8 @@ public class TunerFragment extends SemitoneFragment {
         onSettingsChanged();
     }
 
-    @Override public void onDestroyView() {
-        super.onDestroyView();
+    @Override public void onDestroy() {
+        super.onDestroy();
         onUnfocused();
         ar.release();
     }
@@ -94,6 +92,11 @@ public class TunerFragment extends SemitoneFragment {
 
     @Override public synchronized void onFocused() {
         if (tunerThread == null) {
+            if (ar == null || ar.getState() == AudioRecord.STATE_UNINITIALIZED) {
+                ar = new AudioRecord(AudioSource.MIC, SAMPLE_RATE,
+                        AudioFormat.CHANNEL_IN_MONO,
+                        AudioFormat.ENCODING_PCM_16BIT, bufsize);
+            }
             ar.startRecording();
             tunerThread = new Thread(new TunerThread());
             tunerThread.start();
