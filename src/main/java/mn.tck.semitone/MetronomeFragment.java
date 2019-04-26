@@ -41,6 +41,10 @@ public class MetronomeFragment extends SemitoneFragment {
     final int MIN_TEMPO = 40;
     final int MAX_TEMPO = 400;
 
+    final int TAPS_MAX = 10;
+    long[] taps;
+    int ntaps;
+
     int tempo, beats, subdiv;
     boolean enabled;
 
@@ -113,7 +117,31 @@ public class MetronomeFragment extends SemitoneFragment {
             @Override public void onClick(View v) { toggle(); }
         });
 
-        // TODO don't hardcode numbers here (and 200px in the layout)
+        taps = new long[TAPS_MAX];
+        ntaps = 0;
+        tapBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override public void onClick(View v) {
+                long time = System.currentTimeMillis();
+                if (ntaps > 0 && time - taps[ntaps-1] > 3000) {
+                    // time out after 3 seconds
+                    ntaps = 1;
+                    taps[0] = time;
+                } else if (ntaps == TAPS_MAX) {
+                    for (int i = 0; i < TAPS_MAX-1; ++i) taps[i] = taps[i+1];
+                    taps[TAPS_MAX-1] = time;
+                } else {
+                    taps[ntaps++] = time;
+                }
+
+                if (ntaps > 1) {
+                    tempo = (int)(60000*(ntaps-1) / (taps[ntaps-1] - taps[0]));
+                    tempoBox.setValue(tempo);
+                    tempoBar.setProgress(tempo - MIN_TEMPO);
+                    intermediateTempoChange();
+                }
+            }
+        });
+
         final int smallSize = getResources().getDimensionPixelSize(R.dimen.small_dot),
               largeSize = getResources().getDimensionPixelSize(R.dimen.large_dot);
         dotOn     = makeDot(smallSize, R.color.white);
