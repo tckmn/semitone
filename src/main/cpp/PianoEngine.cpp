@@ -78,7 +78,9 @@ void PianoEngine::playFile(const char *path, int concert_a) {
     soundsLock.lock();
     for (int i = 0; i < MAX_SOUNDS; ++i) {
         if (sounds[i] == nullptr) {
-            sounds[i] = new Sound(am, path, concert_a, 1);
+            Sound *s = new Sound(am, path, concert_a, 1);
+            if (s->nSamples == 0) delete s;
+            else sounds[i] = s;
             break;
         }
     }

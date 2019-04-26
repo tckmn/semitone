@@ -53,6 +53,10 @@ int64_t seek(void *ptr, int64_t offset, int whence) {
 // TODO check for errors here
 Sound::Sound(AAssetManager &am, const char *path, int concert_a, int channels) {
     AAsset *a = AAssetManager_open(&am, path, AASSET_MODE_UNKNOWN);
+    if (a == nullptr) {
+        nSamples = 0;
+        return;
+    }
 
     // we're guessing it won't be compressed more than 12x
     const long sizeGuess = 12 * AAsset_getLength(a) * sizeof(float);
