@@ -23,6 +23,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -85,8 +87,7 @@ public class MainActivity extends FragmentActivity {
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivityForResult(intent, SETTINGS_INTENT_CODE);
+                openOptionsMenu();
             }
         });
     }
@@ -126,6 +127,26 @@ public class MainActivity extends FragmentActivity {
             if (mf != null) mf.onSettingsChanged();
             if (pf != null) pf.onSettingsChanged();
             break;
+        }
+    }
+
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()) {
+        case R.id.menu_settings:
+            startActivityForResult(new Intent(this, SettingsActivity.class),
+                    SETTINGS_INTENT_CODE);
+            return true;
+        case R.id.menu_about:
+            startActivity(new Intent(this, AboutActivity.class));
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
