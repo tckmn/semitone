@@ -156,11 +156,6 @@ public class MetronomeFragment extends SemitoneFragment {
     }
 
     @Override public void onSettingsChanged() {}
-    @Override public void onFocused() {}
-
-    @Override public void onUnfocused() {
-        if (enabled) toggle();
-    }
 
     private ShapeDrawable makeDot(int size, int color) {
         ShapeDrawable dot = new ShapeDrawable(new OvalShape());

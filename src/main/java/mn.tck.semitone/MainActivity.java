@@ -45,14 +45,13 @@ public class MainActivity extends FragmentActivity {
 
     static final int SETTINGS_INTENT_CODE = 123;
 
-    int lastPos = 0;
-
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
         PianoEngine.create(this);
+        RecordEngine.create(this);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor e = sp.edit();
@@ -76,9 +75,8 @@ public class MainActivity extends FragmentActivity {
             @Override public void onPageScrollStateChanged(int state) {}
             @Override public void onPageScrolled(int pos, float off1, int off2) {}
             @Override public void onPageSelected(int pos) {
-                sendFocused(lastPos, false);
-                sendFocused(pos, true);
-                lastPos = pos;
+                if (pos == 0) RecordEngine.resume();
+                else RecordEngine.pause();
             }
         });
 
@@ -95,30 +93,19 @@ public class MainActivity extends FragmentActivity {
     @Override protected void onDestroy() {
         super.onDestroy();
         PianoEngine.destroy();
+        RecordEngine.destroy();
     }
 
     @Override protected void onPause() {
         super.onPause();
-        sendFocused(lastPos, false);
         PianoEngine.pause();
+        RecordEngine.pause();
     }
 
     @Override protected void onResume() {
         super.onResume();
-        sendFocused(lastPos, true);
         PianoEngine.resume();
-    }
-
-    private void sendFocused(int idx, boolean focused) {
-        SemitoneFragment sf = null;
-        switch (idx) {
-        case 0: sf = tf; break;
-        case 1: sf = mf; break;
-        case 2: sf = pf; break;
-        }
-        if (sf != null && sf.isAdded()) {
-            if (focused) sf.onFocused(); else sf.onUnfocused();
-        }
+        RecordEngine.resume();
     }
 
     @Override public void onActivityResult(int code, int res, Intent data) {
@@ -157,9 +144,9 @@ public class MainActivity extends FragmentActivity {
         @Override public int getCount() { return 3; }
         @Override public Fragment getItem(int pos) {
             switch (pos) {
-            case 0: tf = new TunerFragment();     return tf;
+            case 0: tf = new TunerFragment(); RecordEngine.cb = tf; return tf;
             case 1: mf = new MetronomeFragment(); return mf;
-            case 2: pf = new PianoFragment();     return pf;
+            case 2: pf = new PianoFragment(); return pf;
             default: return null;
             }
         }

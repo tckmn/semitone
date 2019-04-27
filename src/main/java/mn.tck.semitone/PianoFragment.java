@@ -79,7 +79,4 @@ public class PianoFragment extends SemitoneFragment {
         piano.labelnotes = sp.getBoolean("labelnotes", false);
     }
 
-    @Override public void onFocused() {}
-    @Override public void onUnfocused() {}
-
 }

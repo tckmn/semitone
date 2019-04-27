@@ -22,6 +22,4 @@ import android.support.v4.app.Fragment;
 
 public abstract class SemitoneFragment extends Fragment {
     abstract void onSettingsChanged();
-    abstract void onFocused();
-    abstract void onUnfocused();
 }

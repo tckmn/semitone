@@ -18,7 +18,9 @@
 
 package mn.tck.semitone;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,25 +30,22 @@ import android.widget.TextView;
 import android.util.TypedValue;
 import android.support.v7.preference.PreferenceManager;
 
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder.AudioSource;
-
 import java.util.Arrays;
 
-public class TunerFragment extends SemitoneFragment {
+public class TunerFragment extends SemitoneFragment implements RecordEngine.Callback {
 
-    final static int SAMPLE_RATE = 44100;
+    final static int REQUEST_MIC = 123;
+
     final static int HIST_SIZE = 16;
-    int bufsize;
-    AudioRecord ar;
 
     View view;
     TextView notename;
+    int notenamesize;
     CentErrorView centerror;
 
     int concert_a;
-    Thread tunerThread;
+
+    double[] dbuf, hist, sorted;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         return inflater.inflate(R.layout.tuner, container, false);
@@ -55,30 +54,34 @@ public class TunerFragment extends SemitoneFragment {
     @Override public void onViewCreated(View view, Bundle state) {
         this.view = view;
 
+        if (RecordEngine.created) dbuf = new double[DSP.fftlen];
+        hist = new double[HIST_SIZE];
+        sorted = new double[HIST_SIZE];
+
         notename = (TextView) view.findViewById(R.id.notename);
-        notename.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override public void onGlobalLayout() {
-                notename.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                notename.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                        Util.maxTextSize("G#000", notename.getWidth()));
-            }
-        });
         centerror = (CentErrorView) view.findViewById(R.id.centerror);
 
-        bufsize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-        ar = null;
+        notename.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+                notename.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                notenamesize = Util.maxTextSize("G#000", notename.getWidth());
+                if (RecordEngine.created) {
+                    notename.setTextSize(TypedValue.COMPLEX_UNIT_PX, notenamesize);
+                } else {
+                    notename.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                    notename.setText("tap to grant microphone permission");
+                    notename.setOnClickListener(new View.OnClickListener() {
+                        @Override public void onClick(View v) {
+                            if (RecordEngine.created) return;
+                            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_MIC);
+                        }
+                    });
+                }
+            }
+        });
 
-        DSP.init(bufsize);
-
-        onFocused(); // this is a hack - when app is opened onFocused() isn't called
         onSettingsChanged();
-    }
-
-    @Override public void onDestroy() {
-        super.onDestroy();
-        onUnfocused();
-        ar.release();
     }
 
     @Override public void onSettingsChanged() {
@@ -90,63 +93,46 @@ public class TunerFragment extends SemitoneFragment {
         }
     }
 
-    @Override public synchronized void onFocused() {
-        if (tunerThread == null) {
-            if (ar == null || ar.getState() == AudioRecord.STATE_UNINITIALIZED) {
-                ar = new AudioRecord(AudioSource.MIC, SAMPLE_RATE,
-                        AudioFormat.CHANNEL_IN_MONO,
-                        AudioFormat.ENCODING_PCM_16BIT, bufsize);
+    @Override public void onRequestPermissionsResult(int code, String[] perms, int[] res) {
+        switch (code) {
+        case REQUEST_MIC:
+            if (res.length > 0 && res[0] == PackageManager.PERMISSION_GRANTED) {
+                notename.setText("");
+                notename.setTextSize(TypedValue.COMPLEX_UNIT_PX, notenamesize);
+                RecordEngine.create(getActivity());
+                dbuf = new double[DSP.fftlen];
             }
-            ar.startRecording();
-            tunerThread = new Thread(new TunerThread());
-            tunerThread.start();
+            break;
         }
     }
 
-    @Override public synchronized void onUnfocused() {
-        if (tunerThread != null) {
-            ar.stop();
-            tunerThread.interrupt();
-            tunerThread = null;
-        }
-    }
+    @Override public void onRecordUpdate(short[] buf) {
+        // copy data to fft buffer - scale down to avoid huge numbers
+        for (int i = 0; i < DSP.fftlen; ++i) dbuf[i] = buf[i] / 1024.0;
 
-    class TunerThread implements Runnable {
-        @Override public void run() {
-            short[] buf = new short[bufsize];
-            double[] dbuf = new double[DSP.fftlen];
-            double[] hist = new double[HIST_SIZE];
-            double[] sorted = new double[HIST_SIZE];
-            while (!Thread.interrupted()) {
-                // copy data to fft buffer - scale down to avoid huge numbers
-                ar.read(buf, 0, bufsize);
-                for (int i = 0; i < DSP.fftlen; ++i) dbuf[i] = buf[i] / 1024.0;
+        // calculate frequency and note
+        double freq = DSP.freq(dbuf, RecordEngine.SAMPLE_RATE),
+                semitone = 12 * Math.log(freq/concert_a)/Math.log(2);
 
-                // calculate frequency and note
-                double freq = DSP.freq(dbuf, SAMPLE_RATE),
-                       semitone = 12 * Math.log(freq/concert_a)/Math.log(2);
+        // insert into moving average history
+        for (int i = 1; i < HIST_SIZE; ++i) sorted[i-1] = hist[i-1] = hist[i];
+        sorted[HIST_SIZE-1] = hist[HIST_SIZE-1] = semitone;
 
-                // insert into moving average history
-                for (int i = 1; i < HIST_SIZE; ++i) sorted[i-1] = hist[i-1] = hist[i];
-                sorted[HIST_SIZE-1] = hist[HIST_SIZE-1] = semitone;
+        // find median
+        Arrays.sort(sorted);
+        final double median = (sorted[HIST_SIZE/2-1]+sorted[HIST_SIZE/2])/2;
 
-                // find median
-                Arrays.sort(sorted);
-                final double median = (sorted[HIST_SIZE/2-1]+sorted[HIST_SIZE/2])/2;
+        final int rounded = (int)Math.round(median);
+        final int note = Math.floorMod(rounded, 12);
 
-                final int rounded = (int)Math.round(median);
-                final int note = Math.floorMod(rounded, 12);
-
-                if (getUserVisibleHint() && getActivity() != null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override public void run() {
-                            notename.setText(Util.notenames[note] +
-                                (Math.floorDiv(rounded, 12) + 5 - (note <= 2 ? 1 : 0)));
-                            centerror.setError(median - rounded);
-                        }
-                    });
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    notename.setText(Util.notenames[note] +
+                        (Math.floorDiv(rounded, 12) + 5 - (note <= 2 ? 1 : 0)));
+                    centerror.setError(median - rounded);
                 }
-            }
+            });
         }
     }
 
