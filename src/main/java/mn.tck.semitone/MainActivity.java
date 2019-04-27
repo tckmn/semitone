@@ -100,11 +100,13 @@ public class MainActivity extends FragmentActivity {
     @Override protected void onPause() {
         super.onPause();
         sendFocused(lastPos, false);
+        PianoEngine.pause();
     }
 
     @Override protected void onResume() {
         super.onResume();
         sendFocused(lastPos, true);
+        PianoEngine.resume();
     }
 
     private void sendFocused(int idx, boolean focused) {

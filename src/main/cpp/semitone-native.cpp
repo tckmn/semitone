@@ -31,6 +31,18 @@ JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_destroyPianoEngine
     delete reinterpret_cast<PianoEngine*>(handle);
 }
 
+JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doPause
+  (JNIEnv*, jclass, jlong handle) {
+    PianoEngine *engine = reinterpret_cast<PianoEngine*>(handle);
+    if (engine != nullptr) engine->pause();
+}
+
+JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doResume
+  (JNIEnv*, jclass, jlong handle) {
+    PianoEngine *engine = reinterpret_cast<PianoEngine*>(handle);
+    if (engine != nullptr) engine->resume();
+}
+
 JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_setSampleRate
   (JNIEnv*, jclass, jint val) {
     oboe::DefaultStreamValues::SampleRate = (int32_t) val;

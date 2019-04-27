@@ -23,6 +23,11 @@ JNIEXPORT jlong JNICALL Java_mn_tck_semitone_PianoEngine_createPianoEngine
 JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_destroyPianoEngine
   (JNIEnv *, jclass, jlong);
 
+JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doPause
+  (JNIEnv *, jclass, jlong);
+JNIEXPORT void JNICALL Java_mn_tck_semitone_PianoEngine_doResume
+  (JNIEnv *, jclass, jlong);
+
 /*
  * Class:     mn_tck_semitone_PianoEngine
  * Method:    setSampleRate

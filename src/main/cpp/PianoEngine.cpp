@@ -54,6 +54,14 @@ void PianoEngine::deinit() {
     stream->close();
 }
 
+void PianoEngine::pause() {
+    stream->requestPause();
+}
+
+void PianoEngine::resume() {
+    stream->requestStart();
+}
+
 void PianoEngine::play(int pitch, int concert_a) {
     mode = TONE_MODE;
     tonesLock.lock();

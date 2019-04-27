@@ -39,6 +39,8 @@ public:
     ~PianoEngine();
     void play(int pitch, int concert_a);
     void stop(int pitch);
+    void pause();
+    void resume();
     void playFile(const char *path, int concert_a);
 
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream *stream, void *data, int32_t frames);
