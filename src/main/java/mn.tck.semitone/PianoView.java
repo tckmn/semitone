@@ -92,7 +92,7 @@ public class PianoView extends View {
         whiteHeight = height / rows;
         blackWidth = whiteWidth * 2 / 3;
         blackHeight = whiteHeight / 2;
-        blackPaint.setTextSize(Util.maxTextSize("G0", whiteWidth * 3/4));
+        blackPaint.setTextSize(Util.maxTextSize("G0", whiteWidth * 2/3));
 
         for (int row = 0; row < rows; ++row) {
             for (int key = 0; key < keys; ++key) {
@@ -106,7 +106,7 @@ public class PianoView extends View {
 
                 if (labelnotes) canvas.drawText(
                         Util.notenames[(p+3)%12] + (p/12 - 1),
-                        x + whiteWidth/2, y + whiteHeight*3/4, blackPaint);
+                        x + whiteWidth/2, y + whiteHeight*4/5, blackPaint);
 
                 if (hasBlackLeft(p)) canvas.drawRect(
                         x, y,

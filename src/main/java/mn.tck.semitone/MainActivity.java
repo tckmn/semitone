@@ -37,7 +37,8 @@ import android.support.v7.preference.PreferenceManager;
 
 public class MainActivity extends FragmentActivity {
 
-    ImageView fullscreen, settings;
+    // ImageView fullscreen;
+    ImageView settings;
 
     static TunerFragment tf;
     static MetronomeFragment mf;
@@ -81,7 +82,7 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        fullscreen = (ImageView) findViewById(R.id.fullscreen);
+        // fullscreen = (ImageView) findViewById(R.id.fullscreen);
         settings = (ImageView) findViewById(R.id.settings);
 
         settings.setOnClickListener(new View.OnClickListener() {
