@@ -4,7 +4,7 @@
     <uses-sdk android:minSdkVersion="16"
               android:targetSdkVersion="28" />
     <application android:label="@string/app_name"
-                 android:icon="@drawable/ic_launcher"
+                 android:icon="@mipmap/ic_launcher"
                  android:theme="@style/SemitoneTheme"
                  android:allowBackup="true">
         <activity android:name=".MainActivity"
