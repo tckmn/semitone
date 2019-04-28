@@ -47,6 +47,12 @@ public class TunerFragment extends SemitoneFragment implements RecordEngine.Call
 
     double[] dbuf, hist, sorted;
 
+    public TunerFragment() {
+        super();
+        MainActivity.tf = this;
+        RecordEngine.cb = this;
+    }
+
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         return inflater.inflate(R.layout.tuner, container, false);
     }
@@ -107,6 +113,10 @@ public class TunerFragment extends SemitoneFragment implements RecordEngine.Call
     }
 
     @Override public void onRecordUpdate(short[] buf) {
+        // this can happen after the fragment has been instantiated but before
+        // onViewCreated has had a chance to run
+        if (dbuf == null) return;
+
         // copy data to fft buffer - scale down to avoid huge numbers
         for (int i = 0; i < DSP.fftlen; ++i) dbuf[i] = buf[i] / 1024.0;
 

@@ -63,6 +63,10 @@ public class MetronomeFragment extends SemitoneFragment {
     Tick tick;
     int strong, weak;
 
+    public MetronomeFragment() {
+        MainActivity.mf = this;
+    }
+
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         return inflater.inflate(R.layout.metronome, container, false);
     }
@@ -155,6 +159,14 @@ public class MetronomeFragment extends SemitoneFragment {
         intermediateBeatChange();
     }
 
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        if (tick != null) {
+            tick.keepGoing = false;
+            tick.interrupt();
+        }
+    }
+
     @Override public void onSettingsChanged() {}
 
     private ShapeDrawable makeDot(int size, int color) {
@@ -221,7 +233,7 @@ public class MetronomeFragment extends SemitoneFragment {
     class Tick extends Thread {
         protected int tempo, subdiv, nTicks;
         protected long startTime, nextTime;
-        protected boolean keepGoing;
+        boolean keepGoing;
         public Tick(int tempo, int subdiv) {
             this.tempo = tempo;
             this.subdiv = subdiv;
@@ -249,13 +261,13 @@ public class MetronomeFragment extends SemitoneFragment {
                 if (nTicks % subdiv == 0) activeDot = (activeDot + 1) % beats;
                 PianoEngine.playFile(nTicks % subdiv == 0 && dots.get(activeDot).big ?
                         "strong.mp3" : "weak.mp3", 440);
-                getActivity().runOnUiThread(new Runnable() {
+                if (getActivity() != null) getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
                         dots.get(activeDot).turnOn();
                     }
                 });
                 try { Thread.sleep(Math.min(100, (long)(delayTime()/2))); } catch (InterruptedException e) {}
-                getActivity().runOnUiThread(new Runnable() {
+                if (getActivity() != null) getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
                         dots.get(activeDot).turnOff();
                     }

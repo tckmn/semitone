@@ -32,6 +32,10 @@ public class PianoFragment extends SemitoneFragment {
 
     View view;
 
+    public PianoFragment() {
+        MainActivity.pf = this;
+    }
+
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         return inflater.inflate(R.layout.piano, container, false);
     }

@@ -41,6 +41,7 @@ public class RecordEngine {
 
     public static void destroy() {
         if (!created) return;
+        created = false;
         pause();
         ar.release();
     }

@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -144,9 +145,9 @@ public class MainActivity extends FragmentActivity {
         @Override public int getCount() { return 3; }
         @Override public Fragment getItem(int pos) {
             switch (pos) {
-            case 0: tf = new TunerFragment(); RecordEngine.cb = tf; return tf;
-            case 1: mf = new MetronomeFragment(); return mf;
-            case 2: pf = new PianoFragment(); return pf;
+            case 0: return new TunerFragment();
+            case 1: return new MetronomeFragment();
+            case 2: return new PianoFragment();
             default: return null;
             }
         }
