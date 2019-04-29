@@ -1,6 +1,8 @@
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
 
 buildscript {
     repositories {
@@ -45,10 +47,12 @@ android {
 
     signingConfigs {
         config {
-            keyAlias keystoreProperties["keyAlias"]
-            keyPassword keystoreProperties["keyPassword"]
-            storeFile file(keystoreProperties["storeFile"])
-            storePassword keystoreProperties["storePassword"]
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties["keyAlias"]
+                keyPassword keystoreProperties["keyPassword"]
+                storeFile file(keystoreProperties["storeFile"])
+                storePassword keystoreProperties["storePassword"]
+            }
         }
     }
 
@@ -66,7 +70,9 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.config
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.config
+            }
         }
     }
 }
