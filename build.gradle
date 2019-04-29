@@ -1,3 +1,7 @@
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 buildscript {
     repositories {
         google()
@@ -16,6 +20,7 @@ repositories {
     maven {
         url "https://maven.google.com"
     }
+    jcenter()
 }
 
 dependencies {
@@ -34,6 +39,17 @@ android {
 
     defaultConfig {
         applicationId "mn.tck.semitone"
+        versionCode 1
+        versionName "1.0"
+    }
+
+    signingConfigs {
+        config {
+            keyAlias keystoreProperties["keyAlias"]
+            keyPassword keystoreProperties["keyPassword"]
+            storeFile file(keystoreProperties["storeFile"])
+            storePassword keystoreProperties["storePassword"]
+        }
     }
 
     externalNativeBuild {
@@ -45,6 +61,12 @@ android {
     sourceSets {
         main {
             jniLibs.srcDirs = ["shared"]
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.config
         }
     }
 }

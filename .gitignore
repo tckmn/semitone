@@ -2,3 +2,4 @@ build
 shared
 .externalNativeBuild
 .gradle
+keystore.properties
