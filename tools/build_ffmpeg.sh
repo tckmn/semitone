@@ -1,6 +1,4 @@
-#!/bin/bash
-
-# NOTE: run this from project root
+#!/usr/bin/env bash
 
 set -e
 cd lib/ffmpeg
