@@ -32,7 +32,7 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
 
         WebView wv = (WebView) findViewById(R.id.aboutbox);
-        wv.loadUrl("file:///android_asset/about.html");
+        wv.loadUrl("file:///android_asset/" + getResources().getString(R.string.about_file));
         wv.setBackgroundColor(Color.TRANSPARENT);
     }
 

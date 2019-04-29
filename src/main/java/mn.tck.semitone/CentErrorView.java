@@ -28,6 +28,7 @@ import android.util.AttributeSet;
 public class CentErrorView extends TextView {
 
     private Paint centerPaint, linePaint;
+    private String cents;
     double error;
 
     public CentErrorView(Context context, AttributeSet attrs) {
@@ -41,12 +42,14 @@ public class CentErrorView extends TextView {
         linePaint.setColor(Color.RED);
         linePaint.setStrokeWidth(2);
 
+        cents = context.getResources().getString(R.string.cents);
+
         error = 0;
     }
 
     public void setError(double error) {
         this.error = error;
-        setText(String.format("%+.2f cents", error*100));
+        setText(String.format("%+.2f %s", error*100, cents));
     }
 
     @Override protected void onDraw(Canvas canvas) {

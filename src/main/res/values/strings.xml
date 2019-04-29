@@ -25,10 +25,12 @@
 
     <string name="menu_about">About</string>
     <string name="about_title">About</string>
+    <string name="about_file">about.html</string>
 
     <!-- TAB-SPECIFIC -->
 
     <string name="tuner_title">Tuner</string>
+    <string name="cents">cents</string>
     <string name="micperm">tap to grant microphone permission</string>
 
     <string name="metronome_title">Metronome</string>
@@ -40,8 +42,5 @@
     <string name="tap_tempo_btn">Tap tempo</string>
 
     <string name="piano_title">Piano</string>
-    <string name="rows_label">rows</string>
-    <string name="keys_label">keys</string>
-    <string name="pitch_label">pitch</string>
 
 </resources>
