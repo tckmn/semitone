@@ -19,7 +19,6 @@
 package mn.tck.semitone;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
@@ -47,10 +46,6 @@ public class SettingsActivity extends AppCompatActivity {
     @Override public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
-    }
-
-    @Override protected void attachBaseContext(Context c) {
-        super.attachBaseContext(Util.fixLocale(c));
     }
 
 }

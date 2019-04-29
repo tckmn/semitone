@@ -18,8 +18,8 @@
 
 package mn.tck.semitone;
 
-import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.support.v7.app.AppCompatActivity;
@@ -43,10 +43,6 @@ public class AboutActivity extends AppCompatActivity {
     @Override public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
-    }
-
-    @Override protected void attachBaseContext(Context c) {
-        super.attachBaseContext(Util.fixLocale(c));
     }
 
 }

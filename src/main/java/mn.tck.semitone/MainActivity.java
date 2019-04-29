@@ -18,7 +18,6 @@
 
 package mn.tck.semitone;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -58,9 +57,8 @@ public class MainActivity extends FragmentActivity {
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor e = sp.edit();
-        if (!sp.contains("language"))   e.putString("language",    "");
-        if (!sp.contains("concert_a"))  e.putString("concert_a",   "440");
-        if (!sp.contains("sustain"))    e.putBoolean("sustain",    false);
+        if (!sp.contains("concert_a")) e.putString("concert_a", "440");
+        if (!sp.contains("sustain")) e.putBoolean("sustain", false);
         if (!sp.contains("labelnotes")) e.putBoolean("labelnotes", false);
         e.commit();
 
@@ -141,10 +139,6 @@ public class MainActivity extends FragmentActivity {
         default:
             return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override protected void attachBaseContext(Context c) {
-        super.attachBaseContext(Util.fixLocale(c));
     }
 
     private static class SemitoneAdapter extends FragmentPagerAdapter {

@@ -11,20 +11,6 @@
     <string name="settings_global">Global settings</string>
     <string name="settings_piano">Piano</string>
 
-    <string name="language_title">Language</string>
-    <string name="language_summary">Set the language for Semitone</string>
-    <string name="language_dialog">Language</string>
-    <string-array name="language_entries">
-        <item>system language</item>
-        <item>English</item>
-        <item>español / castellano</item>
-    </string-array>
-    <string-array name="language_values">
-        <item></item>
-        <item>en</item>
-        <item>es</item>
-    </string-array>
-
     <string name="concert_a_title">A4 pitch</string>
     <string name="concert_a_summary">Set the frequency of A4 (for alternative tunings)</string>
     <string name="concert_a_dialog">A4 pitch (in Hz)</string>
