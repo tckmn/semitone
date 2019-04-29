@@ -76,7 +76,7 @@ public class TunerFragment extends SemitoneFragment implements RecordEngine.Call
                     notename.setTextSize(TypedValue.COMPLEX_UNIT_PX, notenamesize);
                 } else {
                     notename.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                    notename.setText("tap to grant microphone permission");
+                    notename.setText(getResources().getString(R.string.micperm));
                     notename.setOnClickListener(new View.OnClickListener() {
                         @Override public void onClick(View v) {
                             if (RecordEngine.created) return;

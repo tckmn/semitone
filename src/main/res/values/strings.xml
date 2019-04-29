@@ -29,6 +29,7 @@
     <!-- TAB-SPECIFIC -->
 
     <string name="tuner_title">Tuner</string>
+    <string name="micperm">tap to grant microphone permission</string>
 
     <string name="metronome_title">Metronome</string>
     <string name="tempo_label">tempo</string>
