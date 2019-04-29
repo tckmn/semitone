@@ -11,6 +11,15 @@
     <string name="settings_global">Configuración global</string>
     <string name="settings_piano">Piano</string>
 
+    <string name="language_title">Idioma</string>
+    <string name="language_summary">Escoger el idioma para Semitono</string>
+    <string name="language_dialog">Idioma</string>
+    <string-array name="language_entries">
+        <item>idioma del sistema</item>
+        <item>English</item>
+        <item>español / castellano</item>
+    </string-array>
+
     <string name="concert_a_title">Tono de A4</string>
     <string name="concert_a_summary">Ajustar la frecuencia de A4 (para afinaciones alternativas)</string>
     <string name="concert_a_dialog">Tono de A4 (en Hz)</string>

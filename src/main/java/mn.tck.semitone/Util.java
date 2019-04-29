@@ -18,7 +18,14 @@
 
 package mn.tck.semitone;
 
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.text.TextPaint;
+import android.support.v7.preference.PreferenceManager;
+
+import java.util.Locale;
 
 public class Util {
 
@@ -29,6 +36,26 @@ public class Util {
         for (int textSize = 10;; ++textSize) {
             paint.setTextSize(textSize);
             if (paint.measureText(text) > maxWidth) return textSize - 1;
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Context fixLocale(Context c) {
+        String lang = PreferenceManager.getDefaultSharedPreferences(c)
+            .getString("language", "");
+        if (lang == "") return c;
+
+        Locale loc = new Locale(lang);
+        Locale.setDefault(loc);
+        Resources res = c.getResources();
+        Configuration conf = res.getConfiguration();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            conf.setLocale(loc);
+            return c.createConfigurationContext(conf);
+        } else {
+            conf.locale = loc;
+            res.updateConfiguration(conf, res.getDisplayMetrics());
+            return c;
         }
     }
 

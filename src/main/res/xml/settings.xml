@@ -7,6 +7,14 @@
     <PreferenceCategory
         android:title="@string/settings_global">
 
+        <ListPreference
+            android:key="language"
+            android:title="@string/language_title"
+            android:summary="@string/language_summary"
+            android:dialogTitle="@string/language_dialog"
+            android:entries="@array/language_entries"
+            android:entryValues="@array/language_values" />
+
         <EditTextPreference
             android:numeric="integer"
             android:key="concert_a"
