@@ -16,6 +16,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -------
 
+Official website:     https://tck.mn/semitone/
+Google Play download: https://play.google.com/store/apps/details?id=mn.tck.semitone
+F-Droid download:     https://f-droid.org/packages/mn.tck.semitone
+
+-------
+
 To compile, first run
 
  $ tools/build_ffmpeg.sh
