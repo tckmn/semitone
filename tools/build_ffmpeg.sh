@@ -6,7 +6,7 @@ cd lib/ffmpeg
 [ -n "$ANDROID_NDK" ] || { echo >&2 no ndk; exit 1; }
 if [ -z "$HOST_ARCH" ]
 then
-    HOST_ARCH="$(find "$ANDROID_NDK/toolchains/llvm/prebuilt" -mindepth 1 -maxdepth 1 -printf '%f\0' | head -zn1)"
+    HOST_ARCH="$(find "$ANDROID_NDK/toolchains/llvm/prebuilt" -mindepth 1 -maxdepth 1 -printf '%f\0' | head -zn1 | head -c-1)"
     echo >&2 "using host arch $HOST_ARCH - set \$HOST_ARCH to change"
 fi
 
