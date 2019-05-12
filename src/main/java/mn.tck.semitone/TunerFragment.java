@@ -133,13 +133,15 @@ public class TunerFragment extends SemitoneFragment implements RecordEngine.Call
         final double median = (sorted[HIST_SIZE/2-1]+sorted[HIST_SIZE/2])/2;
 
         final int rounded = (int)Math.round(median);
-        final int note = Math.floorMod(rounded, 12);
+        final boolean shift = rounded < 0 && rounded % 12 != 0;
+        final int note   = rounded % 12 + (shift ? 12 : 0);
+        final int octave = rounded / 12 - (shift ? 1  : 0);
 
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override public void run() {
                     notename.setText(Util.notenames[note] +
-                        (Math.floorDiv(rounded, 12) + 5 - (note <= 2 ? 1 : 0)));
+                        (octave + 5 - (note <= 2 ? 1 : 0)));
                     centerror.setError(median - rounded);
                 }
             });
