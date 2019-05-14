@@ -20,6 +20,7 @@
 
     <string name="labelnotes_title">Etiquetar notas</string>
     <string name="labelnotes_summary">Mostrar los nombres de las notas en las teclas</string>
+    <string name="labelnoteslight_title">Mostrar etiqueta solo para C</string>
 
     <!-- ABOUT -->
 
