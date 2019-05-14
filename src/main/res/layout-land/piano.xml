@@ -45,7 +45,17 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/remove_circle_24"
                 android:padding="5dp" />
+            <android.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
 
+            <ImageView
+                android:id="@+id/reset_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/reset_view"
+                android:padding="5dp" />
         </LinearLayout>
 
         <LinearLayout
