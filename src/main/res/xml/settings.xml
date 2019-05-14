@@ -27,7 +27,12 @@
         <CheckBoxPreference
             android:key="labelnotes"
             android:title="@string/labelnotes_title"
-            android:summary="@string/labelnotes_summary" />
+            android:summary="@string/labelnotes_summary"/>
+
+        <CheckBoxPreference
+            android:dependency="labelnotes"
+            android:key="labelnoteslight"
+            android:title="@string/labelnoteslight_title"/>
 
     </PreferenceCategory>
 

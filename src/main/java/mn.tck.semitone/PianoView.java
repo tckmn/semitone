@@ -54,7 +54,7 @@ public class PianoView extends View {
     HashMap<Integer, Integer> pointers;
 
     int concert_a;
-    boolean sustain, labelnotes;
+    boolean sustain, labelnotes, labelnoteslight;
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -136,7 +136,8 @@ public class PianoView extends View {
                         y + whiteHeight - OUTLINE*2 - YPAD,
                         pressed[p] ? grey4Paint : whitePaint);
 
-                if (labelnotes) canvas.drawText(
+                // label notes if labelnotes is true and either labelnoteslight is "off" or we are at a C note
+                if (labelnotes && (!labelnoteslight || p % 12 == 0)) canvas.drawText(
                         Util.notenames[(p+3)%12] + (p/12 - 1),
                         x + whiteWidth/2, y + whiteHeight*4/5, blackPaint);
 
