@@ -93,6 +93,11 @@ public class PianoFragment extends SemitoneFragment {
                 piano.updateParams(true);
             }
         });
+        view.findViewById(R.id.reset_view).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                piano.setDefaults();
+            }
+        });
 
         onSettingsChanged();
     }

@@ -19,8 +19,10 @@
 package mn.tck.semitone;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,6 +31,15 @@ import android.support.v4.content.ContextCompat;
 import java.util.HashMap;
 
 public class PianoView extends View {
+
+    private final static String PREF_ROWS = "rows";
+    private final static String PREF_KEYS = "keys";
+    private final static String PREF_PITCH = "pitch";
+
+    private final static int PREF_ROWS_DEFAULT = 2;
+    private final static int PREF_KEYS_DEFAULT = 7;
+    private final static int PREF_PITCH_DEFAULT = 28;
+
 
     public int rows, keys, pitch;
     int whiteWidth, whiteHeight, blackWidth, blackHeight;
@@ -48,9 +59,12 @@ public class PianoView extends View {
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        rows = 2;
-        keys = 7;
-        pitch = 28;
+        // get parameters from preferences (or use default values)
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        rows = sp.getInt(PREF_ROWS, PREF_ROWS_DEFAULT);
+        keys = sp.getInt(PREF_KEYS, PREF_KEYS_DEFAULT);
+        pitch = sp.getInt(PREF_PITCH, PREF_PITCH_DEFAULT);
+
         updateParams(false);
 
         whitePaint = new Paint();
@@ -69,6 +83,14 @@ public class PianoView extends View {
         pointers = new HashMap<Integer, Integer>();
     }
 
+    public void setDefaults() {
+        rows = PREF_ROWS_DEFAULT;
+        keys = PREF_KEYS_DEFAULT;
+        pitch = PREF_PITCH_DEFAULT;
+
+        updateParams(true);
+    }
+
     public void updateParams(boolean inval) {
         pitches = new int[rows][keys];
 
@@ -81,7 +103,17 @@ public class PianoView extends View {
             }
         }
 
-        if (inval) invalidate();
+
+        if (inval) {
+            // store parameters in preferences
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+            editor.putInt(PREF_ROWS, rows);
+            editor.putInt(PREF_KEYS, keys);
+            editor.putInt(PREF_PITCH, pitch);
+            editor.apply();
+
+            invalidate();
+        }
     }
 
     @Override protected void onDraw(Canvas canvas) {
