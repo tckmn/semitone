@@ -3,3 +3,6 @@ shared
 .externalNativeBuild
 .gradle
 keystore.properties
+.idea
+local.properties
+*.iml
