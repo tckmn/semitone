@@ -19,11 +19,8 @@
 package mn.tck.semitone;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Window;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -33,7 +30,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.preference.PreferenceManager;
 
 public class MainActivity extends FragmentActivity {
 
@@ -49,18 +45,10 @@ public class MainActivity extends FragmentActivity {
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
         PianoEngine.create(this);
         RecordEngine.create(this);
-
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor e = sp.edit();
-        if (!sp.contains("concert_a")) e.putString("concert_a", "440");
-        if (!sp.contains("sustain")) e.putBoolean("sustain", false);
-        if (!sp.contains("labelnotes")) e.putBoolean("labelnotes", false);
-        e.commit();
 
         tt = getResources().getString(R.string.tuner_title);
         mt = getResources().getString(R.string.metronome_title);
@@ -127,7 +115,6 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
         switch (item.getItemId()) {
         case R.id.menu_settings:
             startActivityForResult(new Intent(this, SettingsActivity.class),

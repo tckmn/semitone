@@ -22,10 +22,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.widget.TextView;
 import android.util.AttributeSet;
 
-public class CentErrorView extends TextView {
+public class CentErrorView extends android.support.v7.widget.AppCompatTextView {
 
     private Paint centerPaint, linePaint;
     private String cents;

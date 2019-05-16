@@ -22,15 +22,14 @@ import android.content.Context;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.support.v4.content.ContextCompat;
 
@@ -131,7 +130,7 @@ public class MetronomeFragment extends SemitoneFragment {
                     ntaps = 1;
                     taps[0] = time;
                 } else if (ntaps == TAPS_MAX) {
-                    for (int i = 0; i < TAPS_MAX-1; ++i) taps[i] = taps[i+1];
+                    System.arraycopy(taps, 1, taps, 0, TAPS_MAX - 1);
                     taps[TAPS_MAX-1] = time;
                 } else {
                     taps[ntaps++] = time;
@@ -253,7 +252,7 @@ public class MetronomeFragment extends SemitoneFragment {
                 // }
                 else {
                     // we have a while - sleep and check again
-                    try { Thread.sleep(diff); } catch (InterruptedException e) {}
+                    SystemClock.sleep(diff);
                     continue;
                 }
 
@@ -266,7 +265,7 @@ public class MetronomeFragment extends SemitoneFragment {
                         dots.get(activeDot).turnOn();
                     }
                 });
-                try { Thread.sleep(Math.min(100, (long)(delayTime()/2))); } catch (InterruptedException e) {}
+                SystemClock.sleep(Math.min(100, (long)(delayTime()/2)));
                 if (getActivity() != null) getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
                         dots.get(activeDot).turnOff();
@@ -285,7 +284,7 @@ public class MetronomeFragment extends SemitoneFragment {
         protected double delayTime() { return 1000 * 60.0 / (tempo*subdiv); }
     }
 
-    class Dot extends ImageView {
+    class Dot extends android.support.v7.widget.AppCompatImageView {
         boolean big;
         public Dot(Context context, boolean big) {
             super(context);

@@ -29,11 +29,10 @@ public class SettingsActivity extends AppCompatActivity {
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setContentView(R.layout.activity_settings);
 
         getSupportFragmentManager()
             .beginTransaction()
-            .replace(R.id.settingsframe, new SettingsFragment())
+            .replace(android.R.id.content, new SettingsFragment())
             .commit();
     }
 
