@@ -21,8 +21,8 @@
 #include <oboe/Oboe.h>
 
 extern "C" {
-#include <libavformat/avformat.h>
 #include <libswresample/swresample.h>
+#include <libavformat/avformat.h>
 #include <libavutil/opt.h>
 }
 

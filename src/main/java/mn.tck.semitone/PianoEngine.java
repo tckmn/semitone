@@ -28,6 +28,10 @@ public class PianoEngine {
     static long handle = 0;
 
     static {
+        System.loadLibrary("avutil");
+        System.loadLibrary("swresample");
+        System.loadLibrary("avcodec");
+        System.loadLibrary("avformat");
         System.loadLibrary("semitone-native");
     }
 

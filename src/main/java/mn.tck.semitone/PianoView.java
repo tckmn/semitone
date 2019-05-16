@@ -151,7 +151,7 @@ public class PianoView extends View {
                 pid = ev.getPointerId(i); p = getPitch(ev, i);
                 if (pointers.get(pid) != p) {
                     stop(pointers.get(pid));
-                    pointers.replace(pid, p);
+                    pointers.put(pid, p);
                     play(p);
                     anyChange = true;
                 }
