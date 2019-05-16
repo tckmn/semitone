@@ -62,11 +62,8 @@ public class MetronomeFragment extends SemitoneFragment {
     Tick tick;
     int strong, weak;
 
-    public MetronomeFragment() {
-        MainActivity.mf = this;
-    }
-
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
+        MainActivity.addOnSettingsChangeListener(this);
         return inflater.inflate(R.layout.metronome, container, false);
     }
 
@@ -160,6 +157,7 @@ public class MetronomeFragment extends SemitoneFragment {
 
     @Override public void onDestroyView() {
         super.onDestroyView();
+        MainActivity.unregisterSettingsChangeListener(this);
         if (tick != null) {
             tick.keepGoing = false;
             tick.interrupt();

@@ -48,12 +48,11 @@ public class TunerFragment extends SemitoneFragment implements RecordEngine.Call
     double[] dbuf, hist, sorted;
 
     public TunerFragment() {
-        super();
-        MainActivity.tf = this;
         RecordEngine.cb = this;
     }
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
+        MainActivity.addOnSettingsChangeListener(this);
         return inflater.inflate(R.layout.tuner, container, false);
     }
 
@@ -79,8 +78,9 @@ public class TunerFragment extends SemitoneFragment implements RecordEngine.Call
                     notename.setText(getResources().getString(R.string.micperm));
                     notename.setOnClickListener(new View.OnClickListener() {
                         @Override public void onClick(View v) {
-                            if (RecordEngine.created) return;
-                            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_MIC);
+                            if (!RecordEngine.created) {
+                                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_MIC);
+                            }
                         }
                     });
                 }
@@ -88,6 +88,11 @@ public class TunerFragment extends SemitoneFragment implements RecordEngine.Call
         });
 
         onSettingsChanged();
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        MainActivity.unregisterSettingsChangeListener(this);
     }
 
     @Override public void onSettingsChanged() {

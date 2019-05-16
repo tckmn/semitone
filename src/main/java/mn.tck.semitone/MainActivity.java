@@ -31,17 +31,25 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import java.util.HashSet;
+
 public class MainActivity extends FragmentActivity {
 
     // ImageView fullscreen;
     ImageView settings;
 
-    static TunerFragment tf;
-    static MetronomeFragment mf;
-    static PianoFragment pf;
+    private static HashSet<SemitoneFragment> semitoneFragments = new HashSet<>();
     static String tt, mt, pt;
 
     static final int SETTINGS_INTENT_CODE = 123;
+
+    static void addOnSettingsChangeListener(SemitoneFragment f) {
+        semitoneFragments.add(f);
+    }
+
+    static void unregisterSettingsChangeListener(SemitoneFragment f) {
+        semitoneFragments.remove(f);
+    }
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -102,9 +110,9 @@ public class MainActivity extends FragmentActivity {
         super.onActivityResult(code, res, data);
         switch (code) {
         case SETTINGS_INTENT_CODE:
-            if (tf != null) tf.onSettingsChanged();
-            if (mf != null) mf.onSettingsChanged();
-            if (pf != null) pf.onSettingsChanged();
+            for (SemitoneFragment f : semitoneFragments) {
+                f.onSettingsChanged();
+            }
             break;
         }
     }

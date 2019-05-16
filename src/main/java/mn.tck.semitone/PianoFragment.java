@@ -30,11 +30,8 @@ public class PianoFragment extends SemitoneFragment {
     PianoView piano;
     View view;
 
-    public PianoFragment() {
-        MainActivity.pf = this;
-    }
-
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
+        MainActivity.addOnSettingsChangeListener(this);
         return inflater.inflate(R.layout.piano, container, false);
     }
 
@@ -95,6 +92,11 @@ public class PianoFragment extends SemitoneFragment {
         });
 
         onSettingsChanged();
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        MainActivity.unregisterSettingsChangeListener(this);
     }
 
     @Override public void onSettingsChanged() {
