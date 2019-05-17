@@ -46,11 +46,22 @@
                 android:src="@drawable/remove_circle_24"
                 android:padding="5dp" />
 
-            <android.widget.Space
-                android:layout_width="0dp"
+            <Spinner
+                android:id="@+id/root_note_spinner"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_gravity="center_vertical"
+                android:entries="@array/noteNames"
+                android:spinnerMode="dropdown" />
 
+            <Spinner
+                android:id="@+id/scale_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:entries="@array/scaleNames"
+                android:spinnerMode="dropdown" />
             <ImageView
                 android:id="@+id/reset_view"
                 android:layout_width="wrap_content"

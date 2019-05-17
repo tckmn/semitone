@@ -3,6 +3,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:semitone="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -45,11 +46,25 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/remove_circle_24"
                 android:padding="5dp" />
+
             <android.widget.Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
 
+            <Spinner
+                android:id="@+id/root_note_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/noteNames"
+                android:spinnerMode="dropdown" />
+
+            <Spinner
+                android:id="@+id/scale_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/scaleNamesShort"
+                android:spinnerMode="dropdown" />
             <ImageView
                 android:id="@+id/reset_view"
                 android:layout_width="wrap_content"

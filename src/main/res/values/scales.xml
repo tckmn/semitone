@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Scales from python-musthe:-->
+    <!-- ok C major            ['C', 'D', 'E', 'F', 'G', 'A', 'B']-->
+    <!-- ok C natural_minor    ['C', 'D', 'Eb', 'F', 'G', 'Ab', 'Bb']-->
+    <!--C harmonic_minor   ['C', 'D', 'Eb', 'F', 'G', 'Ab', 'B']-->
+    <!--C melodic_minor    ['C', 'D', 'Eb', 'F', 'G', 'A', 'B']-->
+    <!-- ok C major_pentatonic ['C', 'D', 'E', 'G', 'A']-->
+    <!-- ok C minor_pentatonic ['C', 'Eb', 'F', 'G', 'Bb']-->
+
+    <!-- TODO I18N scale names -->
+    <string-array name="scaleNames">
+        <item>None</item>
+        <item>Natural Major</item>
+        <item>Natural Minor</item>
+        <item>Harmonic Minor</item>
+        <item>Melodic Minor</item>
+        <item>Pentatonic Major</item>
+        <item>Pentatonic Minor</item>
+    </string-array>
+    <string-array name="scaleNamesShort">
+        <item>-</item>
+        <item>NatMaj</item>
+        <item>NatMin</item>
+        <item>HarMin</item>
+        <item>MelMin</item>
+        <item>PenMaj</item>
+        <item>PenMin</item>
+    </string-array>
+    <string-array name="noteNames">
+        <item>C</item>
+        <item>C# / Db</item>
+        <item>D</item>
+        <item>D# / Eb</item>
+        <item>E</item>
+        <item>F</item>
+        <item>F# / Gb</item>
+        <item>G</item>
+        <item>G# / Ab</item>
+        <item>A</item>
+        <item>A# / Bb</item>
+        <item>B</item>
+    </string-array>
+    <array name="scales">
+        <item>@array/noscale</item>
+        <item>@array/natural_major</item>
+        <item>@array/natural_minor</item>
+        <item>@array/harmonic_minor</item>
+        <item>@array/melodic_minor</item>
+        <item>@array/pentatonic_major</item>
+        <item>@array/pentatonic_minor</item>
+    </array>
+    <integer-array name="noscale">
+        <item>0</item> <!-- C -->
+        <item>0</item> <!-- C# / Db -->
+        <item>0</item> <!-- D -->
+        <item>0</item> <!-- D# / Eb -->
+        <item>0</item> <!-- E -->
+        <item>0</item> <!-- F -->
+        <item>0</item> <!-- F# / Gb -->
+        <item>0</item> <!-- G -->
+        <item>0</item> <!-- G# / Ab -->
+        <item>0</item> <!-- A -->
+        <item>0</item> <!-- A# / Bb -->
+        <item>0</item> <!-- B -->
+    </integer-array>
+    <integer-array name="natural_major">
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+    <integer-array name="natural_minor">
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+    </integer-array>
+    <integer-array name="harmonic_minor">
+        <item>1</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>1</item>
+        <item>0</item>
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+    <integer-array name="melodic_minor">
+        <item>1</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+    <integer-array name="pentatonic_major">
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>0</item>
+    </integer-array>
+    <integer-array name="pentatonic_minor">
+        <item>1</item>
+        <item>0</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+    </integer-array>
+</resources>

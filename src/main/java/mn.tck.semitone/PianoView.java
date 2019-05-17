@@ -20,30 +20,36 @@ package mn.tck.semitone;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.support.v4.content.ContextCompat;
 
 import java.util.HashMap;
 
 public class PianoView extends View {
 
-    private final static String PREF_ROWS = "rows";
-    private final static String PREF_KEYS = "keys";
-    private final static String PREF_PITCH = "pitch";
+    final static String PREF_ROWS = "rows";
+    final static String PREF_KEYS = "keys";
+    final static String PREF_PITCH = "pitch";
+    final static String PREF_SCALE = "scale";
+    final static String PREF_SCALE_ROOT = "scale_root";
 
-    private final static int PREF_ROWS_DEFAULT = 2;
-    private final static int PREF_KEYS_DEFAULT = 7;
-    private final static int PREF_PITCH_DEFAULT = 28;
+    final static int PREF_ROWS_DEFAULT = 2;
+    final static int PREF_KEYS_DEFAULT = 7;
+    final static int PREF_PITCH_DEFAULT = 28;
+    final static int PREF_SCALE_DEFAULT = 0;
+    final static int PREF_SCALE_ROOT_DEFAULT = 0;
 
 
-    public int rows, keys, pitch;
+    public int rows, keys, pitch, scale, rootNote;
     int whiteWidth, whiteHeight, blackWidth, blackHeight;
     Paint whitePaint, grey1Paint, grey3Paint, grey4Paint, blackPaint;
+    Paint whiteScalePaint, blackScalePaint;
 
     final int OUTLINE = 2, YPAD = 20;
     final int SAMPLE_RATE = 44100;
@@ -52,6 +58,7 @@ public class PianoView extends View {
     int[][] pitches;
     boolean[] pressed;
     HashMap<Integer, Integer> pointers;
+    Paint[] scaleColors;
 
     int concert_a;
     boolean sustain, labelnotes, labelnoteslight;
@@ -79,6 +86,13 @@ public class PianoView extends View {
         blackPaint.setColor(ContextCompat.getColor(getContext(), R.color.black));
         blackPaint.setTextAlign(Paint.Align.CENTER);
 
+        // set colors to use if a scale shall be highlighted
+        whiteScalePaint = new Paint();
+        whiteScalePaint.setColor(ContextCompat.getColor(getContext(), R.color.whiteScale));
+        blackScalePaint = new Paint();
+        blackScalePaint.setColor(ContextCompat.getColor(getContext(), R.color.blackScale));
+        setScale(sp.getInt(PREF_SCALE, PREF_SCALE_DEFAULT), sp.getInt(PREF_SCALE_ROOT, PREF_SCALE_ROOT_DEFAULT));
+
         pressed = new boolean[300];
         pointers = new HashMap<Integer, Integer>();
     }
@@ -88,6 +102,7 @@ public class PianoView extends View {
         keys = PREF_KEYS_DEFAULT;
         pitch = PREF_PITCH_DEFAULT;
 
+        setScale(PREF_SCALE_DEFAULT, PREF_SCALE_ROOT_DEFAULT);
         updateParams(true);
     }
 
@@ -103,7 +118,6 @@ public class PianoView extends View {
             }
         }
 
-
         if (inval) {
             // store parameters in preferences
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
@@ -116,7 +130,38 @@ public class PianoView extends View {
         }
     }
 
-    @Override protected void onDraw(Canvas canvas) {
+    public void setScale(int newScale, int newRoot) {
+        scale = newScale;
+        rootNote = newRoot;
+        if (scale > 0) {
+            // get scale array from resources and adjust colors used for drawing the keyboard accordingly
+            TypedArray ta = getResources().obtainTypedArray(R.array.scales);
+            int[] scaleArray = getResources().getIntArray(ta.getResourceId(scale, 0));
+            scaleColors = new Paint[12];
+            int realKey;
+            for (int i = 0; i < scaleArray.length; i++) {
+                realKey = (i + rootNote) % 12;
+                scaleColors[realKey] = (scaleArray[i] == 0
+                        ? (isBlack(realKey) ? blackPaint : whitePaint)
+                        : (isBlack(realKey) ? blackScalePaint : whiteScalePaint));
+            }
+            ta.recycle();
+        } else {
+            // set default colors if no scale is selected
+            scaleColors = new Paint[]{whitePaint, blackPaint, whitePaint, blackPaint, whitePaint, whitePaint, blackPaint, whitePaint, blackPaint, whitePaint, blackPaint, whitePaint};
+        }
+
+        // store in preferences
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+        editor.putInt(PREF_SCALE, scale);
+        editor.putInt(PREF_SCALE_ROOT, rootNote);
+        editor.apply();
+
+        invalidate();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         int width = getWidth(), height = getHeight();
 
@@ -124,7 +169,7 @@ public class PianoView extends View {
         whiteHeight = height / rows;
         blackWidth = whiteWidth * 2 / 3;
         blackHeight = whiteHeight / 2;
-        blackPaint.setTextSize(Util.maxTextSize("G0", whiteWidth * 2/3));
+        blackPaint.setTextSize(Util.maxTextSize("G0", whiteWidth * 2 / 3));
 
         for (int row = 0; row < rows; ++row) {
             for (int key = 0; key < keys; ++key) {
@@ -133,28 +178,29 @@ public class PianoView extends View {
 
                 canvas.drawRect(x, y, x + whiteWidth, y + whiteHeight - YPAD, grey3Paint);
                 canvas.drawRect(x + OUTLINE, y, x + whiteWidth - OUTLINE,
-                        y + whiteHeight - OUTLINE*2 - YPAD,
-                        pressed[p] ? grey4Paint : whitePaint);
+                        y + whiteHeight - OUTLINE * 2 - YPAD,
+                        pressed[p] ? grey4Paint : scaleColors[p % 12]);
 
-                // label notes if labelnotes is true and either labelnoteslight is "off" or we are at a C note
+                // draw labels if labelnotes is true and either labelnoteslight is "off" or we are at a C note
                 if (labelnotes && (!labelnoteslight || p % 12 == 0)) canvas.drawText(
-                        Util.notenames[(p+3)%12] + (p/12 - 1),
-                        x + whiteWidth/2, y + whiteHeight*4/5, blackPaint);
+                        Util.notenames[(p + 3) % 12] + (p / 12 - 1),
+                        x + whiteWidth / 2, y + whiteHeight * 4 / 5, blackPaint);
 
                 if (hasBlackLeft(p)) canvas.drawRect(
                         x, y,
                         x + blackWidth / 2, y + blackHeight,
-                        pressed[p-1] ? grey1Paint : blackPaint);
+                        pressed[p - 1] ? grey1Paint : scaleColors[(p - 1) % 12]);
                 if (hasBlackRight(p)) canvas.drawRect(
                         x + whiteWidth - blackWidth / 2, y,
                         x + whiteWidth, y + blackHeight,
-                        pressed[p+1] ? grey1Paint : blackPaint);
+                        pressed[p + 1] ? grey1Paint : scaleColors[(p + 1) % 12]);
 
             }
         }
     }
 
-    @Override public boolean onTouchEvent(MotionEvent ev) {
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
         // we want to be able to swipe on the piano without swiping to a
         // different tab
         getParent().requestDisallowInterceptTouchEvent(true);
@@ -164,43 +210,46 @@ public class PianoView extends View {
 
         switch (ev.getActionMasked()) {
 
-        case MotionEvent.ACTION_DOWN:
-            pid = ev.getPointerId(0); p = getPitch(ev, 0);
-            pointers.put(pid, p);
-            play(p);
-            invalidate();
-            return true;
+            case MotionEvent.ACTION_DOWN:
+                pid = ev.getPointerId(0);
+                p = getPitch(ev, 0);
+                pointers.put(pid, p);
+                play(p);
+                invalidate();
+                return true;
 
-        case MotionEvent.ACTION_POINTER_DOWN:
-            pid = ev.getPointerId(ev.getActionIndex()); p = getPitch(ev, ev.getActionIndex());
-            pointers.put(pid, p);
-            play(p);
-            invalidate();
-            return true;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                pid = ev.getPointerId(ev.getActionIndex());
+                p = getPitch(ev, ev.getActionIndex());
+                pointers.put(pid, p);
+                play(p);
+                invalidate();
+                return true;
 
-        case MotionEvent.ACTION_MOVE:
-            boolean anyChange = false;
-            for (int i = 0; i < np; ++i) {
-                pid = ev.getPointerId(i); p = getPitch(ev, i);
-                if (pointers.get(pid) != p) {
-                    stop(pointers.get(pid));
-                    pointers.put(pid, p);
-                    play(p);
-                    anyChange = true;
+            case MotionEvent.ACTION_MOVE:
+                boolean anyChange = false;
+                for (int i = 0; i < np; ++i) {
+                    pid = ev.getPointerId(i);
+                    p = getPitch(ev, i);
+                    if (pointers.get(pid) != p) {
+                        stop(pointers.get(pid));
+                        pointers.put(pid, p);
+                        play(p);
+                        anyChange = true;
+                    }
                 }
-            }
-            if (anyChange) invalidate();
-            return true;
+                if (anyChange) invalidate();
+                return true;
 
-        case MotionEvent.ACTION_UP:
-            stop(pointers.remove(ev.getPointerId(0)));
-            invalidate();
-            return true;
+            case MotionEvent.ACTION_UP:
+                stop(pointers.remove(ev.getPointerId(0)));
+                invalidate();
+                return true;
 
-        case MotionEvent.ACTION_POINTER_UP:
-            stop(pointers.remove(ev.getPointerId(ev.getActionIndex())));
-            invalidate();
-            return true;
+            case MotionEvent.ACTION_POINTER_UP:
+                stop(pointers.remove(ev.getPointerId(ev.getActionIndex())));
+                invalidate();
+                return true;
 
         }
 
@@ -208,15 +257,15 @@ public class PianoView extends View {
     }
 
     private int getPitch(MotionEvent ev, int pidx) {
-        int row = Math.min((int)(ev.getY(pidx) / whiteHeight), rows-1),
-            key = Math.min((int)(ev.getX(pidx) / whiteWidth), keys-1),
-            p = pitches[row][key];
+        int row = Math.min((int) (ev.getY(pidx) / whiteHeight), rows - 1),
+                key = Math.min((int) (ev.getX(pidx) / whiteWidth), keys - 1),
+                p = pitches[row][key];
 
-        if (ev.getY(pidx) - row*whiteHeight < blackHeight) {
+        if (ev.getY(pidx) - row * whiteHeight < blackHeight) {
             // we're high enough to hit a black key - check if we do
-            int x = (int)(ev.getX(pidx) - key*whiteWidth);
-            if (x < blackWidth/2 && hasBlackLeft(p)) --p;
-            else if (x > whiteWidth - blackWidth/2 && hasBlackRight(p)) ++p;
+            int x = (int) (ev.getX(pidx) - key * whiteWidth);
+            if (x < blackWidth / 2 && hasBlackLeft(p)) --p;
+            else if (x > whiteWidth - blackWidth / 2 && hasBlackRight(p)) ++p;
         }
 
         return p < 0 || p > 128 ? 0 : p;
@@ -225,7 +274,7 @@ public class PianoView extends View {
     private void play(int pitch) {
         pressed[pitch] = true;
         if (sustain) PianoEngine.play(pitch, concert_a);
-        else PianoEngine.playFile("piano/"+pitch+".mp3", concert_a);
+        else PianoEngine.playFile("piano/" + pitch + ".mp3", concert_a);
     }
 
     private void stop(int pitch) {
@@ -233,7 +282,16 @@ public class PianoView extends View {
         if (sustain) PianoEngine.stop(pitch);
     }
 
-    private boolean hasBlackLeft(int p) { return p % 12 != 5 && p % 12 != 0; }
-    private boolean hasBlackRight(int p) { return p % 12 != 4 && p % 12 != 11; }
+    private boolean hasBlackLeft(int p) {
+        return p % 12 != 5 && p % 12 != 0;
+    }
+
+    private boolean hasBlackRight(int p) {
+        return p % 12 != 4 && p % 12 != 11;
+    }
+
+    private boolean isBlack(int p) {
+        return p % 12 == 1 || p % 12 == 3 || p % 12 == 6 || p % 12 == 8 || p % 12 == 10;
+    }
 
 }

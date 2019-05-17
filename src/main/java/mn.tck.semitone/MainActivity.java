@@ -55,13 +55,6 @@ public class MainActivity extends FragmentActivity {
         PianoEngine.create(this);
         RecordEngine.create(this);
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor e = sp.edit();
-        if (!sp.contains("concert_a")) e.putString("concert_a", "440");
-        if (!sp.contains("sustain")) e.putBoolean("sustain", false);
-        if (!sp.contains("labelnotes")) e.putBoolean("labelnotes", false);
-        e.commit();
-
         tt = getResources().getString(R.string.tuner_title);
         mt = getResources().getString(R.string.metronome_title);
         pt = getResources().getString(R.string.piano_title);
@@ -83,7 +76,7 @@ public class MainActivity extends FragmentActivity {
         });
 
         // fullscreen = (ImageView) findViewById(R.id.fullscreen);
-        settings = (ImageView) findViewById(R.id.settings);
+        settings = findViewById(R.id.settings);
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {

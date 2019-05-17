@@ -19,22 +19,27 @@
 package mn.tck.semitone;
 
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.preference.PreferenceManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 public class PianoFragment extends SemitoneFragment {
 
-    private static final String PREF_SUSTAIN = "sustain";
-    private static final String PREF_LABELNOTES = "labelnotes";
-    private static final String PREF_LABELNOTESLIGHT = "labelnoteslight";
-    private static final String PREF_CONCERT_A = "concert_a";
-    private static final boolean PREF_SUSTAIN_DEFAULT = false;
-    private static final boolean PREF_LABELNOTESLIGHT_DEFAULT = false;
-    private static final boolean PREF_LABELNOTES_DEFAULT = false;
-    private static final String PREF_CONCERT_A_DEFAULT = "440";
+    static final String PREF_SUSTAIN = "sustain";
+    static final String PREF_LABELNOTES = "labelnotes";
+    static final String PREF_LABELNOTESLIGHT = "labelnoteslight";
+    static final String PREF_CONCERT_A = "concert_a";
+
+    static final boolean PREF_SUSTAIN_DEFAULT = false;
+    static final boolean PREF_LABELNOTESLIGHT_DEFAULT = false;
+    static final boolean PREF_LABELNOTES_DEFAULT = false;
+    static final String PREF_CONCERT_A_DEFAULT = "440";
 
     PianoView piano;
     View view;
@@ -102,12 +107,53 @@ public class PianoFragment extends SemitoneFragment {
                 piano.updateParams(true);
             }
         });
-        view.findViewById(R.id.reset_view).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                piano.setDefaults();
+
+
+        // Setup the root note spinner
+        final Spinner rootNoteSpinner = view.findViewById(R.id.root_note_spinner);
+        final ArrayAdapter<CharSequence> rootNoteAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.noteNames, android.R.layout.simple_spinner_item);
+        rootNoteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        rootNoteSpinner.setAdapter(rootNoteAdapter);
+        rootNoteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                piano.setScale(piano.scale, i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // NOP
             }
         });
 
+        // Setup the scale spinner
+        final Spinner scaleSpinner = view.findViewById(R.id.scale_spinner);
+        ArrayAdapter<CharSequence> scaleAdapter = ArrayAdapter.createFromResource(getContext(),
+                getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? R.array.scaleNamesShort : R.array.scaleNames,
+                android.R.layout.simple_spinner_item);
+        scaleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        scaleSpinner.setAdapter(scaleAdapter);
+        scaleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                piano.setScale(i, piano.rootNote);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // NOP
+            }
+        });
+
+
+        view.findViewById(R.id.reset_view).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                scaleSpinner.setSelection(PianoView.PREF_SCALE_DEFAULT);
+                rootNoteSpinner.setSelection(PianoView.PREF_SCALE_ROOT_DEFAULT);
+                piano.setDefaults();
+            }
+        });
         onSettingsChanged();
     }
 
