@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Gravity;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -184,12 +185,14 @@ public class MetronomeFragment extends SemitoneFragment {
             activeDot = -1;
             tick = new Tick(tempo, subdiv);
             tick.start();
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
             startBtn.setText(getString(R.string.start_btn));
             if (tick != null) {
                 tick.keepGoing = false;
                 tick.interrupt();
             }
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 
