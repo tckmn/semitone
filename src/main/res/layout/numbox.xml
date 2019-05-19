@@ -31,7 +31,6 @@
             android:id="@+id/value"
             android:inputType="number"
             android:layout_width="wrap_content"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:minEms="2"
             android:gravity="center"
