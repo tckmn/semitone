@@ -27,15 +27,6 @@ import android.support.v7.preference.PreferenceManager;
 
 public class PianoFragment extends SemitoneFragment {
 
-    private static final String PREF_SUSTAIN = "sustain";
-    private static final String PREF_LABELNOTES = "labelnotes";
-    private static final String PREF_LABELNOTESLIGHT = "labelnoteslight";
-    private static final String PREF_CONCERT_A = "concert_a";
-    private static final boolean PREF_SUSTAIN_DEFAULT = false;
-    private static final boolean PREF_LABELNOTESLIGHT_DEFAULT = false;
-    private static final boolean PREF_LABELNOTES_DEFAULT = false;
-    private static final String PREF_CONCERT_A_DEFAULT = "440";
-
     PianoView piano;
     View view;
 
@@ -104,7 +95,10 @@ public class PianoFragment extends SemitoneFragment {
         });
         view.findViewById(R.id.reset_view).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                piano.setDefaults();
+                piano.rows = 2;
+                piano.keys = 7;
+                piano.pitch = 28;
+                piano.updateParams(true);
             }
         });
 
@@ -114,13 +108,13 @@ public class PianoFragment extends SemitoneFragment {
     @Override public void onSettingsChanged() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
         try {
-            piano.concert_a = Integer.parseInt(sp.getString(PREF_CONCERT_A, PREF_CONCERT_A_DEFAULT));
+            piano.concert_a = Integer.parseInt(sp.getString("concert_a", "440"));
         } catch (NumberFormatException e) {
             piano.concert_a = 440;
         }
-        piano.sustain = sp.getBoolean(PREF_SUSTAIN, PREF_SUSTAIN_DEFAULT);
-        piano.labelnotes = sp.getBoolean(PREF_LABELNOTES, PREF_LABELNOTES_DEFAULT);
-        piano.labelnoteslight = sp.getBoolean(PREF_LABELNOTESLIGHT, PREF_LABELNOTESLIGHT_DEFAULT);
+        piano.sustain = sp.getBoolean("sustain", false);
+        piano.labelnotes = sp.getBoolean("labelnotes", false);
+        piano.labelc = sp.getBoolean("labelc", false);
     }
 
 }

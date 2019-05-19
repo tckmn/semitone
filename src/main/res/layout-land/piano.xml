@@ -45,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/remove_circle_24"
                 android:padding="5dp" />
+
             <android.widget.Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

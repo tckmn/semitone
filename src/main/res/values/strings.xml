@@ -20,7 +20,8 @@
 
     <string name="labelnotes_title">Label notes</string>
     <string name="labelnotes_summary">Show note names on piano keys</string>
-    <string name="labelnoteslight_title">Show label for C only</string>
+    <string name="labelc_title">Label only C</string>
+    <string name="labelc_summary">Show note name for C only</string>
 
     <!-- ABOUT -->
 

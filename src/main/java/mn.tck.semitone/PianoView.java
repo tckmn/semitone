@@ -22,24 +22,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.preference.PreferenceManager;
 
 import java.util.HashMap;
 
 public class PianoView extends View {
-
-    private final static String PREF_ROWS = "rows";
-    private final static String PREF_KEYS = "keys";
-    private final static String PREF_PITCH = "pitch";
-
-    private final static int PREF_ROWS_DEFAULT = 2;
-    private final static int PREF_KEYS_DEFAULT = 7;
-    private final static int PREF_PITCH_DEFAULT = 28;
-
 
     public int rows, keys, pitch;
     int whiteWidth, whiteHeight, blackWidth, blackHeight;
@@ -54,16 +45,15 @@ public class PianoView extends View {
     HashMap<Integer, Integer> pointers;
 
     int concert_a;
-    boolean sustain, labelnotes, labelnoteslight;
+    boolean sustain, labelnotes, labelc;
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        // get parameters from preferences (or use default values)
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        rows = sp.getInt(PREF_ROWS, PREF_ROWS_DEFAULT);
-        keys = sp.getInt(PREF_KEYS, PREF_KEYS_DEFAULT);
-        pitch = sp.getInt(PREF_PITCH, PREF_PITCH_DEFAULT);
+        rows = sp.getInt("piano_rows", 2);
+        keys = sp.getInt("piano_keys", 7);
+        pitch = sp.getInt("piano_pitch", 28);
 
         updateParams(false);
 
@@ -83,14 +73,6 @@ public class PianoView extends View {
         pointers = new HashMap<Integer, Integer>();
     }
 
-    public void setDefaults() {
-        rows = PREF_ROWS_DEFAULT;
-        keys = PREF_KEYS_DEFAULT;
-        pitch = PREF_PITCH_DEFAULT;
-
-        updateParams(true);
-    }
-
     public void updateParams(boolean inval) {
         pitches = new int[rows][keys];
 
@@ -105,11 +87,11 @@ public class PianoView extends View {
 
 
         if (inval) {
-            // store parameters in preferences
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
-            editor.putInt(PREF_ROWS, rows);
-            editor.putInt(PREF_KEYS, keys);
-            editor.putInt(PREF_PITCH, pitch);
+            SharedPreferences.Editor editor =
+                PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+            editor.putInt("piano_rows", rows);
+            editor.putInt("piano_keys", keys);
+            editor.putInt("piano_pitch", pitch);
             editor.apply();
 
             invalidate();
@@ -136,8 +118,7 @@ public class PianoView extends View {
                         y + whiteHeight - OUTLINE*2 - YPAD,
                         pressed[p] ? grey4Paint : whitePaint);
 
-                // label notes if labelnotes is true and either labelnoteslight is "off" or we are at a C note
-                if (labelnotes && (!labelnoteslight || p % 12 == 0)) canvas.drawText(
+                if (labelnotes && (!labelc || p % 12 == 0)) canvas.drawText(
                         Util.notenames[(p+3)%12] + (p/12 - 1),
                         x + whiteWidth/2, y + whiteHeight*4/5, blackPaint);
 
