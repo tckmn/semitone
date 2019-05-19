@@ -113,8 +113,8 @@ public class PianoFragment extends SemitoneFragment {
             piano.concert_a = 440;
         }
         piano.sustain = sp.getBoolean("sustain", false);
-        piano.labelnotes = sp.getBoolean("labelnotes", false);
-        piano.labelc = sp.getBoolean("labelc", false);
+        piano.labelnotes = sp.getBoolean("labelnotes", true);
+        piano.labelc = sp.getBoolean("labelc", true);
     }
 
 }
