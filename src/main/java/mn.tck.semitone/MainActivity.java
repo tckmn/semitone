@@ -112,7 +112,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override protected void onResume() {
         super.onResume();
-        if (!keeptick) PianoEngine.resume();
+        if (PianoEngine.paused) PianoEngine.resume();
         RecordEngine.resume();
     }
 
@@ -123,6 +123,8 @@ public class MainActivity extends FragmentActivity {
             if (tf != null) tf.onSettingsChanged();
             if (mf != null) mf.onSettingsChanged();
             if (pf != null) pf.onSettingsChanged();
+            keeptick = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean("keeptick", false);
             break;
         }
     }
