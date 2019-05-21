@@ -1,3 +1,10 @@
+1.2:
+ * Persistent piano configuration.
+ * Add option to only label C on piano.
+ * Keep screen on while metronome is on.
+ * Add option for metronome to continue when app is closed.
+ * Minor bugfixes.
+
 1.1:
  * Fix several crashes on older API versions.
  * Minor editing (add links, fix typos).
