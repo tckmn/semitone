@@ -56,6 +56,15 @@ void PianoEngine::deinit() {
 
 void PianoEngine::pause() {
     stream->requestPause();
+    stream->waitForStateChange(oboe::StreamState::Pausing, nullptr, 1000000000);
+    for (int i = 0; i < MAX_TONES; ++i) {
+        delete tones[i];
+        tones[i] = nullptr;
+    }
+    for (int i = 0; i < MAX_SOUNDS; ++i) {
+        delete sounds[i];
+        sounds[i] = nullptr;
+    }
 }
 
 void PianoEngine::resume() {
