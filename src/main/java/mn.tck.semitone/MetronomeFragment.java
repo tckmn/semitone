@@ -260,6 +260,17 @@ public class MetronomeFragment extends SemitoneFragment {
                     continue;
                 }
 
+                if (PianoEngine.paused) {
+                    // the app was backgrounded and the setting to keep ticking
+                    // is off, so stop the metronome
+                    if (getActivity() != null) getActivity().runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            toggle();
+                        }
+                    });
+                    break;
+                }
+
                 // time for another tick
                 if (nTicks % subdiv == 0) activeDot = (activeDot + 1) % beats;
                 PianoEngine.playFile(nTicks % subdiv == 0 && dots.get(activeDot).big ?

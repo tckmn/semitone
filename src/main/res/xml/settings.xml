@@ -17,6 +17,16 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/settings_metronome">
+
+        <CheckBoxPreference
+            android:key="keeptick"
+            android:title="@string/keeptick_title"
+            android:summary="@string/keeptick_summary" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/settings_piano">
 
         <CheckBoxPreference

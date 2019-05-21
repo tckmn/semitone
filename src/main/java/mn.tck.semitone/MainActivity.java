@@ -45,6 +45,8 @@ public class MainActivity extends FragmentActivity {
     static PianoFragment pf;
     static String tt, mt, pt;
 
+    boolean keeptick;
+
     static final int SETTINGS_INTENT_CODE = 123;
 
     @Override protected void onCreate(Bundle state) {
@@ -58,10 +60,13 @@ public class MainActivity extends FragmentActivity {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor e = sp.edit();
         if (!sp.contains("concert_a")) e.putString("concert_a", "440");
+        if (!sp.contains("keeptick")) e.putBoolean("keeptick", false);
         if (!sp.contains("sustain")) e.putBoolean("sustain", false);
         if (!sp.contains("labelnotes")) e.putBoolean("labelnotes", true);
         if (!sp.contains("labelc")) e.putBoolean("labelc", true);
         e.commit();
+
+        keeptick = sp.getBoolean("keeptick", false);
 
         tt = getResources().getString(R.string.tuner_title);
         mt = getResources().getString(R.string.metronome_title);
@@ -101,13 +106,13 @@ public class MainActivity extends FragmentActivity {
 
     @Override protected void onPause() {
         super.onPause();
-        PianoEngine.pause();
+        if (!keeptick) PianoEngine.pause();
         RecordEngine.pause();
     }
 
     @Override protected void onResume() {
         super.onResume();
-        PianoEngine.resume();
+        if (!keeptick) PianoEngine.resume();
         RecordEngine.resume();
     }
 

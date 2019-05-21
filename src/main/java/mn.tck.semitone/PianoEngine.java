@@ -26,6 +26,7 @@ import android.os.Build;
 public class PianoEngine {
 
     static long handle = 0;
+    static boolean paused = true;
 
     static {
         System.loadLibrary("avutil");
@@ -45,6 +46,7 @@ public class PianoEngine {
             setFramesPerBurst(Integer.parseInt(am.getProperty(
                             AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)));
         }
+        paused = false;
         return false;
     }
 
@@ -52,10 +54,11 @@ public class PianoEngine {
         if (handle == 0) return;
         destroyPianoEngine(handle);
         handle = 0;
+        paused = true;
     }
 
-    static void pause() { doPause(handle); }
-    static void resume() { doResume(handle); }
+    static void pause() { paused = true; doPause(handle); }
+    static void resume() { paused = false; doResume(handle); }
     static void play(int pitch, int concert_a) { doPlay(handle, pitch, concert_a); }
     static void stop(int pitch) { doStop(handle, pitch); }
     static void playFile(String path, int concert_a) { doPlayFile(handle, path, concert_a); }
