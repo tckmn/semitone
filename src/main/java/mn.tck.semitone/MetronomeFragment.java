@@ -33,7 +33,8 @@ import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.support.v4.content.ContextCompat;
+
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 

@@ -25,27 +25,28 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.preference.PreferenceManager;
+
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
 
 public class PianoView extends View {
 
     public int rows, keys, pitch;
-    int whiteWidth, whiteHeight, blackWidth, blackHeight;
-    Paint whitePaint, grey1Paint, grey3Paint, grey4Paint, blackPaint;
+    protected int whiteWidth, whiteHeight, blackWidth, blackHeight;
+    protected Paint whitePaint, grey1Paint, grey3Paint, grey4Paint, blackPaint;
 
-    final int OUTLINE = 2, YPAD = 20;
+    protected final int OUTLINE = 2, YPAD = 20;
     final int SAMPLE_RATE = 44100;
     final int MAX_TRACKS = 10;
 
-    int[][] pitches;
-    boolean[] pressed;
+    protected int[][] pitches;
+    protected boolean[] pressed;
     HashMap<Integer, Integer> pointers;
 
-    int concert_a;
-    boolean sustain, labelnotes, labelc;
+    protected int concert_a;
+    protected boolean sustain, labelnotes, labelc;
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -214,7 +215,7 @@ public class PianoView extends View {
         if (sustain) PianoEngine.stop(pitch);
     }
 
-    private boolean hasBlackLeft(int p) { return p % 12 != 5 && p % 12 != 0; }
-    private boolean hasBlackRight(int p) { return p % 12 != 4 && p % 12 != 11; }
+    protected boolean hasBlackLeft(int p) { return p % 12 != 5 && p % 12 != 0; }
+    protected boolean hasBlackRight(int p) { return p % 12 != 4 && p % 12 != 11; }
 
 }

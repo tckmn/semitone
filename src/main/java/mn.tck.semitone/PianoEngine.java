@@ -36,7 +36,7 @@ public class PianoEngine {
         System.loadLibrary("semitone-native");
     }
 
-    static boolean create(Context context) {
+    static public boolean create(Context context) {
         if (handle != 0) return true;
         handle = createPianoEngine(context.getAssets());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -50,7 +50,7 @@ public class PianoEngine {
         return false;
     }
 
-    static void destroy() {
+    public static void destroy() {
         if (handle == 0) return;
         destroyPianoEngine(handle);
         handle = 0;
