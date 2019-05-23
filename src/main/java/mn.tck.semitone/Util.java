@@ -22,7 +22,7 @@ import android.text.TextPaint;
 
 public class Util {
 
-    final static String[] notenames = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+    public final static String[] notenames = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
 
     public static int maxTextSize(String text, int maxWidth) {
         TextPaint paint = new TextPaint();

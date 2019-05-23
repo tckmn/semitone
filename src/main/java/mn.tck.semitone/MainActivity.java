@@ -27,13 +27,15 @@ import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.preference.PreferenceManager;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.preference.PreferenceManager;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends FragmentActivity {
 
@@ -136,17 +138,15 @@ public class MainActivity extends FragmentActivity {
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
-        switch (item.getItemId()) {
-        case R.id.menu_settings:
+        if (item.getItemId() == R.id.menu_settings) {
             startActivityForResult(new Intent(this, SettingsActivity.class),
                     SETTINGS_INTENT_CODE);
             return true;
-        case R.id.menu_about:
+        } else if (item.getItemId() == R.id.menu_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
-        default:
+        } else
             return super.onOptionsItemSelected(item);
-        }
     }
 
     private static class SemitoneAdapter extends FragmentPagerAdapter {

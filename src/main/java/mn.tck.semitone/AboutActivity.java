@@ -22,7 +22,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.webkit.WebView;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class AboutActivity extends AppCompatActivity {
 
