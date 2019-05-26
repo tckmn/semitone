@@ -26,10 +26,10 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.android.support:preference-v7:28.0.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support:support-core-ui:28.0.0'
-    implementation 'com.android.support:design:28.0.0'
+    implementation 'androidx.preference:preference:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0-rc01'
 }
 
 android {
