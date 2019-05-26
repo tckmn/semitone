@@ -4,6 +4,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/settings_title">
 
+    <Preference
+        android:title="@string/about_title">
+
+        <intent
+            android:targetPackage="mn.tck.semitone"
+            android:targetClass="mn.tck.semitone.AboutActivity" />
+
+    </Preference>
+
     <PreferenceCategory
         android:title="@string/settings_global">
 

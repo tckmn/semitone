@@ -6,11 +6,13 @@
 
     <!-- SETTINGS -->
 
-    <string name="menu_settings">Configuración</string>
     <string name="settings_title">Configuración</string>
     <string name="settings_global">Configuración global</string>
     <string name="settings_metronome">Metrónomo</string>
     <string name="settings_piano">Piano</string>
+
+    <string name="about_title">Acerca de</string>
+    <string name="about_file">about-es.html</string>
 
     <string name="concert_a_title">Tono de A4</string>
     <string name="concert_a_summary">Ajustar la frecuencia de A4 (para afinaciones alternativas)</string>
@@ -27,12 +29,6 @@
 
     <string name="labelc_title">Etiquetar solo C</string>
     <string name="labelc_summary">Mostrar el nombre solo para C</string>
-
-    <!-- ABOUT -->
-
-    <string name="menu_about">Acerca de</string>
-    <string name="about_title">Acerca de</string>
-    <string name="about_file">about-es.html</string>
 
     <!-- TAB-SPECIFIC -->
 

@@ -6,11 +6,13 @@
 
     <!-- SETTINGS -->
 
-    <string name="menu_settings">Settings</string>
     <string name="settings_title">Settings</string>
     <string name="settings_global">Global settings</string>
     <string name="settings_metronome">Metronome</string>
     <string name="settings_piano">Piano</string>
+
+    <string name="about_title">About</string>
+    <string name="about_file">about.html</string>
 
     <string name="concert_a_title">A4 pitch</string>
     <string name="concert_a_summary">Set the frequency of A4 (for alternative tunings)</string>
@@ -27,12 +29,6 @@
 
     <string name="labelc_title">Label only C</string>
     <string name="labelc_summary">Show note name for C only</string>
-
-    <!-- ABOUT -->
-
-    <string name="menu_about">About</string>
-    <string name="about_title">About</string>
-    <string name="about_file">about.html</string>
 
     <!-- TAB-SPECIFIC -->
 

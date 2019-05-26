@@ -95,7 +95,9 @@ public class MainActivity extends FragmentActivity {
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                openOptionsMenu();
+                startActivityForResult(
+                        new Intent(MainActivity.this, SettingsActivity.class),
+                        SETTINGS_INTENT_CODE);
             }
         });
     }
@@ -129,25 +131,6 @@ public class MainActivity extends FragmentActivity {
                 .getBoolean("keeptick", false);
             break;
         }
-    }
-
-    @Override public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
-        final int itemId = item.getItemId();
-        // can't switch here because if semitone is used as a library,
-        // R.id.* are non-final
-        if (itemId == R.id.menu_settings) {
-            startActivityForResult(new Intent(this, SettingsActivity.class),
-                    SETTINGS_INTENT_CODE);
-            return true;
-        } else if (itemId == R.id.menu_about) {
-            startActivity(new Intent(this, AboutActivity.class));
-            return true;
-        } else return super.onOptionsItemSelected(item);
     }
 
     private static class SemitoneAdapter extends FragmentPagerAdapter {
