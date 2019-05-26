@@ -137,16 +137,17 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
-        if (item.getItemId() == R.id.menu_settings) {
+        final int itemId = item.getItemId();
+        // can't switch here because if semitone is used as a library,
+        // R.id.* are non-final
+        if (itemId == R.id.menu_settings) {
             startActivityForResult(new Intent(this, SettingsActivity.class),
                     SETTINGS_INTENT_CODE);
             return true;
-        } else if (item.getItemId() == R.id.menu_about) {
+        } else if (itemId == R.id.menu_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
-        } else
-            return super.onOptionsItemSelected(item);
+        } else return super.onOptionsItemSelected(item);
     }
 
     private static class SemitoneAdapter extends FragmentPagerAdapter {
