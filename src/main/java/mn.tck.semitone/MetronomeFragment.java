@@ -19,6 +19,7 @@
 package mn.tck.semitone;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
@@ -59,7 +60,7 @@ public class MetronomeFragment extends SemitoneFragment {
     Button startBtn, tapBtn;
 
     View view;
-    ShapeDrawable dotOn, dotOnBig, dotOff, dotOffBig;
+    ShapeDrawable dotOn, dotOnBig, dotOnMute, dotOff, dotOffBig, dotOffMute;
     LinearLayout.LayoutParams dotParams;
 
     Tick tick;
@@ -150,10 +151,12 @@ public class MetronomeFragment extends SemitoneFragment {
 
         final int smallSize = getResources().getDimensionPixelSize(R.dimen.small_dot),
               largeSize = getResources().getDimensionPixelSize(R.dimen.large_dot);
-        dotOn     = makeDot(smallSize, R.color.white);
-        dotOnBig  = makeDot(largeSize, R.color.white);
-        dotOff    = makeDot(smallSize, R.color.grey1);
-        dotOffBig = makeDot(largeSize, R.color.grey1);
+        dotOn       = makeDot(smallSize, R.color.white, false);
+        dotOnBig    = makeDot(largeSize, R.color.white, false);
+        dotOnMute   = makeDot(smallSize, R.color.white, true);
+        dotOff      = makeDot(smallSize, R.color.grey1, false);
+        dotOffBig   = makeDot(largeSize, R.color.grey1, false);
+        dotOffMute  = makeDot(smallSize, R.color.grey1, true);
 
         dotParams = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1);
 
@@ -171,11 +174,14 @@ public class MetronomeFragment extends SemitoneFragment {
 
     @Override public void onSettingsChanged() {}
 
-    private ShapeDrawable makeDot(int size, int color) {
+    private ShapeDrawable makeDot(int size, int color, boolean stroke) {
         ShapeDrawable dot = new ShapeDrawable(new OvalShape());
         dot.setIntrinsicWidth(size);
         dot.setIntrinsicHeight(size);
         dot.getPaint().setColor(ContextCompat.getColor(getContext(), color));
+        if (stroke) {
+            dot.getPaint().setStyle(Paint.Style.STROKE);
+        }
         return dot;
     }
 
@@ -274,8 +280,9 @@ public class MetronomeFragment extends SemitoneFragment {
 
                 // time for another tick
                 if (nTicks % subdiv == 0) activeDot = (activeDot + 1) % beats;
-                PianoEngine.playFile(nTicks % subdiv == 0 && dots.get(activeDot).big ?
-                        "strong.mp3" : "weak.mp3", 440);
+                if (! dots.get(activeDot).isMute()) {
+                    PianoEngine.playFile(nTicks % subdiv == 0 && dots.get(activeDot).isStrong() ? "strong.mp3" : "weak.mp3", 440);
+                }
                 if (getActivity() != null) getActivity().runOnUiThread(new Runnable() {
                     @Override public void run() {
                         dots.get(activeDot).turnOn();
@@ -301,25 +308,28 @@ public class MetronomeFragment extends SemitoneFragment {
     }
 
     class Dot extends ImageView {
-        boolean big;
+        int state; // 0 is weak, 1 is strong, 2 is mute
         public Dot(Context context, boolean big) {
             super(context);
-            this.big = big;
+            state = big ? 1 : 0;
             turnOff();
             setLayoutParams(dotParams);
         }
 
         @Override public boolean onTouchEvent(MotionEvent ev) {
             if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                big = !big;
+                state = (state + 1) % 3;
                 turnOff();
                 return true;
             }
             return false;
         }
 
-        public void turnOff() { setImageDrawable(big ? dotOffBig : dotOff); }
-        public void turnOn()  { setImageDrawable(big ? dotOnBig  : dotOn);  }
+        public boolean isMute() { return (state == 2); };
+        public boolean isStrong() { return (state == 1); };
+
+        public void turnOff() { setImageDrawable(state == 0 ? dotOff : (state == 1 ? dotOffBig : dotOffMute)); }
+        public void turnOn()  { setImageDrawable(state == 0 ? dotOn  : (state == 1 ? dotOnBig  : dotOnMute )); }
     }
 
 }
