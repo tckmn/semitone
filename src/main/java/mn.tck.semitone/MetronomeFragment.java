@@ -19,6 +19,7 @@
 package mn.tck.semitone;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
@@ -75,8 +76,14 @@ public class MetronomeFragment extends SemitoneFragment {
 
     @Override public void onViewCreated(View view, Bundle state) {
         this.view = view;
+        
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = sp.edit();
+        tempo = sp.getInt("metronome_tempo", 120);
+        beats = sp.getInt("metronome_beats", 4);
+        subdiv = sp.getInt("metronome_subdiv", 1);
+        enabled = false;
 
-        tempo = 120; beats = 4; subdiv = 1; enabled = false;
         tempoBox = (NumBox) view.findViewById(R.id.tempo);
         beatsBox = (NumBox) view.findViewById(R.id.beats);
         subdivBox = (NumBox) view.findViewById(R.id.subdiv);
@@ -85,25 +92,34 @@ public class MetronomeFragment extends SemitoneFragment {
         tapBtn = (Button) view.findViewById(R.id.tap);
         dotsView = (LinearLayout) view.findViewById(R.id.dots);
 
+        tempoBox.setValue(tempo);
         tempoBox.cb = new NumBox.Callback() {
             @Override public void onChange(int val) {
                 tempo = val;
+                editor.putInt("metronome_tempo", tempo);
+                editor.apply();
                 tempoBar.setProgress(tempo - MIN_TEMPO);
                 intermediateTempoChange();
             }
         };
         tempoBar.setProgress(tempo - MIN_TEMPO);
 
+        beatsBox.setValue(beats);
         beatsBox.cb = new NumBox.Callback() {
             @Override public void onChange(int val) {
                 beats = val;
+                editor.putInt("metronome_beats", beats);
+                editor.apply();
                 intermediateBeatChange();
             }
         };
 
+        subdivBox.setValue(subdiv);
         subdivBox.cb = new NumBox.Callback() {
             @Override public void onChange(int val) {
                 subdiv = val;
+                editor.putInt("metronome_subdiv", subdiv);
+                editor.apply();
                 intermediateTempoChange();
             }
         };
