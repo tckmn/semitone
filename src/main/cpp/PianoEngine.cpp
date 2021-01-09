@@ -56,15 +56,19 @@ void PianoEngine::deinit() {
 
 void PianoEngine::pause() {
     stream->requestPause();
-    stream->waitForStateChange(oboe::StreamState::Pausing, nullptr, 1000000000);
+    /* stream->waitForStateChange(oboe::StreamState::Pausing, nullptr, 1000000000); */
+    tonesLock.lock();
     for (int i = 0; i < MAX_TONES; ++i) {
-        delete tones[i];
-        tones[i] = nullptr;
+        Tone *tmp = tones[i];
+        if (tmp != nullptr) tmp->stopped = true;
     }
+    tonesLock.unlock();
+    soundsLock.lock();
     for (int i = 0; i < MAX_SOUNDS; ++i) {
-        delete sounds[i];
-        sounds[i] = nullptr;
+        Sound *tmp = sounds[i];
+        if (tmp != nullptr) tmp->stopped = true;
     }
+    soundsLock.unlock();
 }
 
 void PianoEngine::resume() {
@@ -84,10 +88,12 @@ void PianoEngine::play(int pitch, int concert_a) {
 }
 
 void PianoEngine::stop(int pitch) {
+    tonesLock.lock();
     for (int i = 0; i < MAX_TONES; ++i) {
         Tone *t = tones[i];
         if (t != nullptr && t->pitch == pitch) t->stopped = true;
     }
+    tonesLock.unlock();
 }
 
 void PianoEngine::playFile(const char *path, int concert_a) {
@@ -112,11 +118,9 @@ oboe::DataCallbackResult PianoEngine::onAudioReady(oboe::AudioStream *stream, vo
         // count tones and delete stopped ones
         int nTones = 0;
         for (int i = 0; i < MAX_TONES; ++i) {
-            if (tones[i] != nullptr) {
-                if (tones[i]->stopped) {
-                    // set to nullptr before deleting for thread-safety
-                    // (we don't want to delete while stop() has a handle)
-                    Tone *tmp = tones[i];
+            Tone *tmp = tones[i];
+            if (tmp != nullptr) {
+                if (tmp->stopped) {
                     tones[i] = nullptr;
                     delete tmp;
                 } else ++nTones;
@@ -127,7 +131,8 @@ oboe::DataCallbackResult PianoEngine::onAudioReady(oboe::AudioStream *stream, vo
             float thing = 0;
             if (nTones) {
                 for (int j = 0; j < MAX_TONES; ++j) {
-                    if (tones[j] != nullptr) thing += tones[j]->tick();
+                    Tone *tmp = tones[j];
+                    if (tmp != nullptr) thing += tmp->tick();
                 }
                 thing /= nTones;
                 // if we simply divide by the number of tones, the difference
@@ -139,14 +144,23 @@ oboe::DataCallbackResult PianoEngine::onAudioReady(oboe::AudioStream *stream, vo
             for (int ch = 0; ch < channels; ++ch) outBuf[i*channels+ch] = thing;
         }
     } else if (mode == SOUND_MODE) {
+        for (int i = 0; i < MAX_SOUNDS; ++i) {
+            Sound *tmp = sounds[i];
+            if (tmp != nullptr && tmp->stopped) {
+                sounds[i] = nullptr;
+                delete tmp;
+            }
+        }
+
         for (int i = 0; i < frames; ++i) {
             float thing = 0;
             for (int j = 0; j < MAX_SOUNDS; ++j) {
-                if (sounds[j] != nullptr) {
-                    thing += (sounds[j]->data.get())[sounds[j]->offset];
-                    if (++sounds[j]->offset == sounds[j]->nSamples) {
-                        delete sounds[j];
+                Sound *tmp = sounds[j];
+                if (tmp != nullptr) {
+                    thing += (tmp->data.get())[tmp->offset];
+                    if (++tmp->offset == tmp->nSamples) {
                         sounds[j] = nullptr;
+                        delete tmp;
                     }
                 }
             }
