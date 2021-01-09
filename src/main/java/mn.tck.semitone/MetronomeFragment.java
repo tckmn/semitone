@@ -36,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 
@@ -76,9 +77,9 @@ public class MetronomeFragment extends SemitoneFragment {
 
     @Override public void onViewCreated(View view, Bundle state) {
         this.view = view;
-        
+
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor editor = sp.edit();
+        final SharedPreferences.Editor editor = sp.edit();
         tempo = sp.getInt("metronome_tempo", 120);
         beats = sp.getInt("metronome_beats", 4);
         subdiv = sp.getInt("metronome_subdiv", 1);
