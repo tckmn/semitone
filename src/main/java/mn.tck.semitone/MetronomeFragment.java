@@ -129,6 +129,8 @@ public class MetronomeFragment extends SemitoneFragment {
             @Override public void onProgressChanged(SeekBar sb, int val, boolean fromUser) {
                 if (!fromUser) return;
                 tempo = val + MIN_TEMPO;
+                editor.putInt("metronome_tempo", tempo);
+                editor.apply();
                 tempoBox.setValue(tempo);
                 intermediateTempoChange();
             }
@@ -158,6 +160,8 @@ public class MetronomeFragment extends SemitoneFragment {
 
                 if (ntaps > 1) {
                     tempo = (int)(60000*(ntaps-1) / (taps[ntaps-1] - taps[0]));
+                    editor.putInt("metronome_tempo", tempo);
+                    editor.apply();
                     tempoBox.setValue(tempo);
                     tempoBar.setProgress(tempo - MIN_TEMPO);
                     intermediateTempoChange();

@@ -32,8 +32,8 @@
             android:layout_margin="5dp"
             semitone:label="@string/tempo_label"
             semitone:value="120"
-            semitone:minVal="40"
-            semitone:maxVal="400" />
+            semitone:minVal="1"
+            semitone:maxVal="1000" />
 
         <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
 
