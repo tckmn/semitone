@@ -7,11 +7,11 @@ if (keystorePropertiesFile.exists()) {
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:8.3.0'
     }
 }
 
@@ -22,7 +22,6 @@ repositories {
     maven {
         url "https://maven.google.com"
     }
-    jcenter()
 }
 
 dependencies {
@@ -33,7 +32,8 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 30
+    namespace = 'mn.tck.semitone'
+    compileSdkVersion 34
     ndkVersion '22.0.7026061'
 
     lintOptions {
@@ -43,9 +43,9 @@ android {
     defaultConfig {
         applicationId "mn.tck.semitone"
         minSdkVersion 16
-        targetSdkVersion 30
-        versionCode 4
-        versionName "1.3"
+        targetSdkVersion 34
+        versionCode 5
+        versionName "1.3.1"
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_PLATFORM=android-16"
