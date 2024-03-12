@@ -80,6 +80,7 @@ public class MainActivity extends FragmentActivity {
 
         pager.setAdapter(adapter);
         tabs.setupWithViewPager(pager);
+        pager.setCurrentItem(sp.getInt("lastpage", 0));
 
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override public void onPageScrollStateChanged(int state) {}
@@ -87,6 +88,8 @@ public class MainActivity extends FragmentActivity {
             @Override public void onPageSelected(int pos) {
                 if (pos == 0) RecordEngine.resume();
                 else RecordEngine.pause();
+                e.putInt("lastpage", pos);
+                e.commit();
             }
         });
 
